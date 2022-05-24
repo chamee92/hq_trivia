@@ -17,4 +17,5 @@ use App\Http\Controllers\UserController;
 
 Route::post('register', [UserController::class, 'register']);
 Route::post('login', [UserController::class, 'authenticate']);
+Route::get('login', [UserController::class, 'authenticate']);
 //Route::post('version/latest', [SettingController::class, 'latestVersion']);
