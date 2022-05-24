@@ -210,6 +210,25 @@ class UserController extends Controller
             $device_id = isset($data['device_id']) ? $data['device_id'] : null;
             $defaut_password = $first_name;
             $date_time = date('Y-m-d H:i:s');
+
+            if($mobile_number != null) {
+                $user_data = User::where('mobile_number', $mobile_number)->where('is_active', 1)->orderBy('id', 'DESC')->first();
+                if(isset($user_data->id) && intval($user_data->id) > 0) {
+                    $output['success'] = false;
+                    $output['message'] = "You enter mobile number previousely used. Please login the system use your mobile number!";
+                    $output['data'] = null;
+                    return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+                }
+            }
+            if($email_address != null) {
+                $user_data1 = User::where('email_address', $email_address)->where('is_active', 1)->orderBy('id', 'DESC')->first();
+                if(isset($user_data1->id) && intval($user_data1->id) > 0) {
+                    $output['success'] = false;
+                    $output['message'] = "You enter email address previousely used. Please login the system use your email address!";
+                    $output['data'] = null;
+                    return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+                }
+            }
             if($login_type == 1) {
                 $email = $mobile_number;
             } else {
@@ -232,7 +251,7 @@ class UserController extends Controller
                 }
                 $file_name = time().'_'.$first_name . '.' . $ext;
                 $file_path = $request->file('profile_picture')->storeAs('uploads/users', $file_name, 'public');
-                $profile_picture = 'http://local.hq_trivia.lk/storage/'.$file_path;
+                $profile_picture = 'http://hq.docketapps.com/storage/'.$file_path;
             } else {
                 $profile_picture = null;
             }
