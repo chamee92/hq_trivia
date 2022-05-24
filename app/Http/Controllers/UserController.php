@@ -17,6 +17,7 @@ class UserController extends Controller
     
         try {
             $data = json_decode($request->getContent(),true);
+            dd($data);
             $login_type = isset($data['login_type']) ? intval($data['login_type']) : 1;
             $mobile_number = isset($data['mobile_number']) ? $data['mobile_number'] : null; 
             $email_address = isset($data['email_address']) ? $data['email_address'] : null; 
