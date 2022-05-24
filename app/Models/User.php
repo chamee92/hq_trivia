@@ -32,6 +32,7 @@ class User extends Authenticatable implements JWTSubject
         'facebook_password',
         'push_id',
         'device_id',
+        'os_type',
         'address1',
         'address2',
         'zip_code',

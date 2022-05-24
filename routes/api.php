@@ -16,6 +16,14 @@ use App\Http\Controllers\UserController;
 */
 
 Route::post('register', [UserController::class, 'register']);
-Route::post('login', [UserController::class, 'userLogin']);
-Route::post('test', [UserController::class, 'getTest']);
+Route::post('login', [UserController::class, 'autheticate']);
+
 //Route::post('version/latest', [SettingController::class, 'latestVersion']);
+Route::group(['middleware' => ['jwt.verify']], function () {  
+    Route::post('logout', [UserController::class, 'logout']); 
+    Route::post('password/reset', [UserController::class, 'passwordChange']);
+    Route::post('user/data', [UserController::class, 'getAuthenticatedUser']);
+    Route::post('user/list', [UserController::class, 'usersData']);
+    Route::post('user/manage', [UserController::class, 'userManage']);
+
+});
