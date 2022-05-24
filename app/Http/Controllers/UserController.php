@@ -35,7 +35,7 @@ class UserController extends Controller
                 if ($validator->fails()) {
                     $output['success'] = false;
                     $output['data'] = [];
-                    $output['message'] = 'Invalid request 123';
+                    $output['message'] = 'Invalid request';
                     return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
                 }
 
@@ -187,7 +187,7 @@ class UserController extends Controller
                     $output['message'] = "Please enter your address second field & try again..!";
                     $output['data'] = null;
                     return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
-                } else if($validator44>fails()) {
+                } else if($validator4->fails()) {
                     $output['success'] = false;
                     $output['message'] = "Please enter your zip code & try again..!";
                     $output['data'] = null;
