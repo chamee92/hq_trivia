@@ -16,25 +16,28 @@ class UserController extends Controller
     {
     
         try {
-            $data = $request->input();
+            $data = json_decode($request->getContent(),true);
             $login_type = isset($data['login_type']) ? intval($data['login_type']) : 1;
+            $mobile_number = isset($data['mobile_number']) ? $data['mobile_number'] : null; 
+            $email_address = isset($data['email_address']) ? $data['email_address'] : null; 
+            $password = isset($data['password']) ? $data['password'] : null; 
+            $push_id = isset($data['push_id']) ? $data['push_id'] : null;
+            $device_id = isset($data['device_id']) ? $data['device_id'] : null;
+
             if($login_type == 1) {   
-                $mobile_number = isset($data['mobile_number']) ? $data['mobile_number'] : null;       
-                $password = isset($data['password']) ? $data['password'] : null;  
                 //valid credential
                 $validator = Validator::make($data, [
                     'mobile_number' => 'required',
                     'password' => 'required',
-                    'login_type' => 'required',
+                    'login_type' => 'required'/*,
                     'push_id' => 'required',
-                    'device_id' => 'required',
+                    'device_id' => 'required',*/
                 ]);
 
                 //Send failed response if request is not valid
                 if ($validator->fails()) {
                     $output['success'] = false;
                     $output['data'] = [];
-                    //$output['message'] = $validator->messages();
                     $output['message'] = 'Invalid request';
                     return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
                 }
@@ -43,12 +46,20 @@ class UserController extends Controller
                 try {
                     $user_data = User::where('mobile_number', $data['mobile_number'])->first();
                     if(isset($user_data->id) && intval($user_data->id) > 0) {
+                        $user_data->email  = $mobile_number; 
                         $user_data->password  = $user_data->normal_password; 
-                        $user_data->push_id  = $data['push_id']; 
-                        $user_data->device_id  = $data['device_id']; 
+                        $user_data->push_id  = $push_id; 
+                        $user_data->device_id  = $device_id; 
                         $user_data->login_type = 1;
                         $user_data->save();
+                    } else {
+                        $output['success'] = false;
+                        $output['data'] = [];
+                        $output['message'] = 'User canot idenitified. Please contact admin!';
+                        return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
                     }
+                    $credentials['email'] = $mobile_number;
+                    $credentials['password'] = $password;
                     if (! $token = JWTAuth::attempt($credentials)) {
                         $output['success'] = false;
                         $output['data'] = [];
@@ -57,7 +68,7 @@ class UserController extends Controller
                     }
                 } catch (JWTException $e) {
                     $output['success'] = false;
-                    $output['data']['error'] = $e;
+                    $output['data'] = null;
                     $output['message'] = "Could not create token";
                     return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
 
@@ -72,9 +83,9 @@ class UserController extends Controller
                 //valid credential
                 $validator = Validator::make($data, [
                     'email_address' => 'required',
-                    'login_type' => 'required',
+                    'login_type' => 'required'/*,
                     'push_id' => 'required',
-                    'device_id' => 'required',
+                    'device_id' => 'required',*/
                 ]);
                 //Send failed response if request is not valid
                 if ($validator->fails()) {
@@ -87,16 +98,25 @@ class UserController extends Controller
 
                  //Request is validated
                  try {
-                    $user_data = User::where('email_address', $data['email_address'])->first();
+                    $user_data = User::where('email_address', $email_address)->first();
+                    $credentials['email'] = $email_address;
                     if(isset($user_data->id) && intval($user_data->id) > 0) {
-                        $user_data->password  = bcrypt($user_data->email_address);
-                        $user_data->google_password  = bcrypt($user_data->email_address);
-                        $user_data->apple_password  = bcrypt($user_data->email_address);
-                        $credentials['password'] =  $user_data->email_address;                       
-                        $user_data->push_id  = $data['push_id']; 
-                        $user_data->device_id  = $data['device_id']; 
+                        $credentials['password'] = $user_data->first_name;
+                        if($login_type == 2) {
+                            $user_data->password  = $user_data->google_password;
+                        } else if($login_type == 3) {
+                            $user_data->password  = $user_data->facebook_password;
+                        }    
+                        $user_data->email  = $email_address;                   
+                        $user_data->push_id  = $push_id; 
+                        $user_data->device_id  = $device_id; 
                         $user_data->login_type = $login_type;
                         $user_data->save();
+                    } else {
+                        $output['success'] = false;
+                        $output['data'] = [];
+                        $output['message'] = 'User canot idenitified. Please contact admin!';
+                        return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
                     }
                     if (! $token = JWTAuth::attempt($credentials)) {
                         $output['success'] = false;
