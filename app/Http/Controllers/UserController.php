@@ -12,7 +12,7 @@ use App\Models\User;
 
 class UserController extends Controller
 {
-    public function authenticate(Request $request)
+    public function userLogin(Request $request)
     {
     
         try {
