@@ -29,9 +29,7 @@ class UserController extends Controller
                 $validator = Validator::make($data, [
                     'mobile_number' => 'required',
                     'password' => 'required',
-                    'login_type' => 'required'/*,
-                    'push_id' => 'required',
-                    'device_id' => 'required',*/
+                    'login_type' => 'required'
                 ]);
 
                 //Send failed response if request is not valid
@@ -55,7 +53,7 @@ class UserController extends Controller
                     } else {
                         $output['success'] = false;
                         $output['data'] = [];
-                        $output['message'] = 'User canot idenitified. Please contact admin!';
+                        $output['message'] = 'User cannot idenitified. Please contact admin!';
                         return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
                     }
                     $credentials['email'] = $mobile_number;
@@ -83,9 +81,7 @@ class UserController extends Controller
                 //valid credential
                 $validator = Validator::make($data, [
                     'email_address' => 'required',
-                    'login_type' => 'required'/*,
-                    'push_id' => 'required',
-                    'device_id' => 'required',*/
+                    'login_type' => 'required'
                 ]);
                 //Send failed response if request is not valid
                 if ($validator->fails()) {
@@ -159,48 +155,40 @@ class UserController extends Controller
             $validator = Validator::make($request->all(), [
                 'user_type_id' => 'required',
                 'first_name' => 'required|string',
-                /*'mobile_number' => 'required|string|unique:users',*/
                 'address1' => 'required|string',
                 'address2' => 'required|string',
                 'zip_code' => 'required|string'
             ]);
             if($validator->fails()){
-                /*$validator1 = Validator::make($request->all(), [                 
-                                'mobile_number' => 'required|string|unique:users'
-                            ]);*/
-                $validator2 = Validator::make($request->all(), [                 
+                $validator1 = Validator::make($request->all(), [                 
                                 'first_name' => 'required|string'
                             ]);
-                $validator3 = Validator::make($request->all(), [          
+                $validator2 = Validator::make($request->all(), [          
                                 'address1' => 'required|string'
                             ]);
-                $validator4 = Validator::make($request->all(), [          
+                $validator3 = Validator::make($request->all(), [          
                                 'address2' => 'required|string'
                             ]);
-                $validator5 = Validator::make($request->all(), [          
+                $validator4 = Validator::make($request->all(), [          
                                 'zip_code' => 'required|string'
                             ]);
-                /*if($validator1->fails()) {
-                    $output['success'] = false;
-                    $output['message'] = "Your mobile number previously use or not correct format, please check & try again..!";
-                    $output['data'] = null;
-                    return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
-                } else */if($validator2->fails()) {
+                
+                if($validator1->fails()) {
                     $output['success'] = false;
                     $output['message'] = "Please enter your first name & try again..!";
                     $output['data'] = null;
                     return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
-                } else if($validator3->fails()) {
+                } else if($validator2->fails()) {
                     $output['success'] = false;
                     $output['message'] = "Please enter your address first field & try again..!";
                     $output['data'] = null;
                     return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
-                } else if($validator4->fails()) {
+                } else if($validator3->fails()) {
                     $output['success'] = false;
                     $output['message'] = "Please enter your address second field & try again..!";
                     $output['data'] = null;
                     return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
-                } else if($validator5->fails()) {
+                } else if($validator4->fails()) {
                     $output['success'] = false;
                     $output['message'] = "Please enter your zip code & try again..!";
                     $output['data'] = null;
