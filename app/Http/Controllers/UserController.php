@@ -16,15 +16,13 @@ class UserController extends Controller
     {
     
         try {
-            $data = $request->input();
-            dd($data);
+            $data = json_decode($request->getContent(),true);
             $login_type = isset($data['login_type']) ? intval($data['login_type']) : 1;
             $mobile_number = isset($data['mobile_number']) ? $data['mobile_number'] : null; 
             $email_address = isset($data['email_address']) ? $data['email_address'] : null; 
             $password = isset($data['password']) ? $data['password'] : null; 
             $push_id = isset($data['push_id']) ? $data['push_id'] : null;
             $device_id = isset($data['device_id']) ? $data['device_id'] : null;
-
             if($login_type == 1) {   
                 //valid credential
                 $validator = Validator::make($data, [
@@ -305,6 +303,12 @@ class UserController extends Controller
             return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
 
         }
+    }
+
+    public function getTest(Request $request)
+    {
+        $data = $request->input();
+        dd($data);
     }
 
     public function getAuthenticatedUser(Request $request)
