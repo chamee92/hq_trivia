@@ -136,7 +136,6 @@ class UserController extends Controller
     public function register(Request $request)
     {
         try {
-            
             $validator = Validator::make($request->all(), [
                 'user_type_id' => 'required',
                 'first_name' => 'required|string',
@@ -195,10 +194,12 @@ class UserController extends Controller
             }
             //Validate data
             $data = $request->input();
+            $login_type = isset($data['login_type']) ? intval($data['login_type']) : 0;
             $user_type_id = isset($data['user_type_id']) ? intval($data['user_type_id']) : 0;
             $first_name = isset($data['first_name']) ? $data['first_name'] : null;
             $last_name = isset($data['last_name']) ? $data['last_name'] : null;
             $mobile_number = isset($data['mobile_number']) ? $data['mobile_number'] : null;
+            $email_address = isset($data['email_address']) ? $data['email_address'] : null;
             $address1 = isset($data['address1']) ? $data['address1'] : null;
             $address2 = isset($data['address2']) ? $data['address2'] : null;
             $zip_code = isset($data['zip_code']) ? $data['zip_code'] : null;
@@ -209,6 +210,11 @@ class UserController extends Controller
             $device_id = isset($data['device_id']) ? $data['device_id'] : null;
             $defaut_password = $first_name;
             $date_time = date('Y-m-d H:i:s');
+            if($login_type == 1) {
+                $email = $mobile_number;
+            } else {
+                $email = $email_address;
+            }
 
             if($user_type_id <= 0 && $first_name == null && $address1 == null && $address2 == null && $zip_code == null ) {
                 $output['success'] = false;
@@ -226,7 +232,7 @@ class UserController extends Controller
                 }
                 $file_name = time().'_'.$first_name . '.' . $ext;
                 $file_path = $request->file('profile_picture')->storeAs('uploads/users', $file_name, 'public');
-                $profile_picture = 'http://local.hq_trivia.com/storage/'.$file_path;
+                $profile_picture = 'http://local.hq_trivia.lk/storage/'.$file_path;
             } else {
                 $profile_picture = null;
             }
@@ -236,6 +242,8 @@ class UserController extends Controller
                         'first_name' => $first_name,
                         'last_name' => $last_name,
                         'mobile_number' => $mobile_number,
+                        'email_address' => $email_address,
+                        'email' => $email,
                         'login_type' => $login_type,
                         'password' => bcrypt($password),
                         'normal_password' => bcrypt($password),
