@@ -443,30 +443,30 @@ class ChallengeController extends Controller
                     ORDER BY c.`id` DESC 
                     LIMIT " . $limit;
             $challenge_data = DB::select($sql);
-            if(sizeof($challenge_data) > 0 ) {
-                foreach($challenge_data AS $index => $challenge) {
-                    $output['data']['challenge'][$index]['challenge_id'] = $challenge->challenge_id;
-                    $output['data']['challenge'][$index]['challenge_name'] = $challenge->challenge_name;
-                    $output['data']['challenge'][$index]['challenge_Description'] = $challenge->challenge_Description;
-                    $output['data']['challenge'][$index]['image_path'] = $challenge->image_path;
-                    $output['data']['challenge'][$index]['video_path'] = $challenge->video_path;
-                    $output['data']['challenge'][$index]['start_date_time'] = $challenge->start_date_time;
-                    $output['data']['challenge'][$index]['end_date_time'] = $challenge->end_date_time;
-                    $output['data']['challenge'][$index]['video_duration'] = $challenge->video_duration;
-                    $output['data']['challenge'][$index]['quiz_duration'] = $challenge->quiz_duration;
-                    $output['data']['challenge'][$index]['question_duration'] = $challenge->question_duration;
-                    $output['data']['challenge'][$index]['question_start_time'] = $challenge->question_start_time;
-                    $output['data']['challenge'][$index]['question_end_time'] = $challenge->question_end_time;
-                    $output['data']['challenge'][$index]['total_price'] = $challenge->total_price;
-                    $output['data']['challenge'][$index]['total_coin'] = $challenge->total_coin;
-                    $output['data']['challenge'][$index]['question_count'] = $challenge->question_count;
-                    $output['data']['challenge'][$index]['question_price'] = $challenge->question_price;
-                    $output['data']['challenge'][$index]['question_coin'] = $challenge->question_coin;
-                    $output['data']['challenge'][$index]['total_watch'] = $challenge->total_watch;
-                    $output['data']['challenge'][$index]['total_like'] = $challenge->total_like;
+            
+            $output['data']['challenge'] = null;
+            foreach($challenge_data AS $index => $challenge) {
+                $output['data']['challenge'][$index]['challenge_id'] = $challenge->challenge_id;
+                $output['data']['challenge'][$index]['challenge_name'] = $challenge->challenge_name;
+                $output['data']['challenge'][$index]['challenge_Description'] = $challenge->challenge_Description;
+                $output['data']['challenge'][$index]['image_path'] = $challenge->image_path;
+                $output['data']['challenge'][$index]['video_path'] = $challenge->video_path;
+                $output['data']['challenge'][$index]['start_date_time'] = $challenge->start_date_time;
+                $output['data']['challenge'][$index]['end_date_time'] = $challenge->end_date_time;
+                $output['data']['challenge'][$index]['video_duration'] = $challenge->video_duration;
+                $output['data']['challenge'][$index]['quiz_duration'] = $challenge->quiz_duration;
+                $output['data']['challenge'][$index]['question_duration'] = $challenge->question_duration;
+                $output['data']['challenge'][$index]['question_start_time'] = $challenge->question_start_time;
+                $output['data']['challenge'][$index]['question_end_time'] = $challenge->question_end_time;
+                $output['data']['challenge'][$index]['total_price'] = $challenge->total_price;
+                $output['data']['challenge'][$index]['total_coin'] = $challenge->total_coin;
+                $output['data']['challenge'][$index]['question_count'] = $challenge->question_count;
+                $output['data']['challenge'][$index]['question_price'] = $challenge->question_price;
+                $output['data']['challenge'][$index]['question_coin'] = $challenge->question_coin;
+                $output['data']['challenge'][$index]['total_watch'] = $challenge->total_watch;
+                $output['data']['challenge'][$index]['total_like'] = $challenge->total_like;
 
-                    $output['data']['challenge'][$index]['question'] = Question::where('challenge_id', $challenge->challenge_id)->where('is_active', 1)->orderBy('id', 'ASC')->get();
-                }
+                $output['data']['challenge'][$index]['question'] = Question::where('challenge_id', $challenge->challenge_id)->where('is_active', 1)->orderBy('id', 'ASC')->get();
             }
             
             $output['data']['server_time'] = $date_time;
@@ -498,40 +498,34 @@ class ChallengeController extends Controller
                     ORDER BY c.`id` DESC 
                     LIMIT " . $limit;
             $challenge_data = DB::select($sql);
-            if(sizeof($challenge_data) > 0 ) {
-                foreach($challenge_data AS $index => $challenge) {
-                    $output['data']['challenge'][$index]['challenge_id'] = $challenge->challenge_id;
-                    $output['data']['challenge'][$index]['challenge_name'] = $challenge->challenge_name;
-                    $output['data']['challenge'][$index]['challenge_Description'] = $challenge->challenge_Description;
-                    $output['data']['challenge'][$index]['image_path'] = $challenge->image_path;
-                    $output['data']['challenge'][$index]['video_path'] = $challenge->video_path;
-                    $output['data']['challenge'][$index]['start_date_time'] = $challenge->start_date_time;
-                    $output['data']['challenge'][$index]['end_date_time'] = $challenge->end_date_time;
-                    $output['data']['challenge'][$index]['video_duration'] = $challenge->video_duration;
-                    $output['data']['challenge'][$index]['quiz_duration'] = $challenge->quiz_duration;
-                    $output['data']['challenge'][$index]['question_duration'] = $challenge->question_duration;
-                    $output['data']['challenge'][$index]['question_start_time'] = $challenge->question_start_time;
-                    $output['data']['challenge'][$index]['question_end_time'] = $challenge->question_end_time;
-                    $output['data']['challenge'][$index]['total_price'] = $challenge->total_price;
-                    $output['data']['challenge'][$index]['total_coin'] = $challenge->total_coin;
-                    $output['data']['challenge'][$index]['question_count'] = $challenge->question_count;
-                    $output['data']['challenge'][$index]['question_price'] = $challenge->question_price;
-                    $output['data']['challenge'][$index]['question_coin'] = $challenge->question_coin;
-                    $output['data']['challenge'][$index]['total_watch'] = $challenge->total_watch;
-                    $output['data']['challenge'][$index]['total_like'] = $challenge->total_like;
+            $output['data']['challenge'] = null;
+            foreach($challenge_data AS $index => $challenge) {
+                $output['data']['challenge'][$index]['challenge_id'] = $challenge->challenge_id;
+                $output['data']['challenge'][$index]['challenge_name'] = $challenge->challenge_name;
+                $output['data']['challenge'][$index]['challenge_Description'] = $challenge->challenge_Description;
+                $output['data']['challenge'][$index]['image_path'] = $challenge->image_path;
+                $output['data']['challenge'][$index]['video_path'] = $challenge->video_path;
+                $output['data']['challenge'][$index]['start_date_time'] = $challenge->start_date_time;
+                $output['data']['challenge'][$index]['end_date_time'] = $challenge->end_date_time;
+                $output['data']['challenge'][$index]['video_duration'] = $challenge->video_duration;
+                $output['data']['challenge'][$index]['quiz_duration'] = $challenge->quiz_duration;
+                $output['data']['challenge'][$index]['question_duration'] = $challenge->question_duration;
+                $output['data']['challenge'][$index]['question_start_time'] = $challenge->question_start_time;
+                $output['data']['challenge'][$index]['question_end_time'] = $challenge->question_end_time;
+                $output['data']['challenge'][$index]['total_price'] = $challenge->total_price;
+                $output['data']['challenge'][$index]['total_coin'] = $challenge->total_coin;
+                $output['data']['challenge'][$index]['question_count'] = $challenge->question_count;
+                $output['data']['challenge'][$index]['question_price'] = $challenge->question_price;
+                $output['data']['challenge'][$index]['question_coin'] = $challenge->question_coin;
+                $output['data']['challenge'][$index]['total_watch'] = $challenge->total_watch;
+                $output['data']['challenge'][$index]['total_like'] = $challenge->total_like;
 
-                    $output['data']['challenge'][$index]['question'] = Question::where('challenge_id', $challenge->challenge_id)->where('is_active', 1)->orderBy('id', 'ASC')->get();
-                }
-                $output['data']['server_time'] = $date_time;
-                $output['success'] = true;
-                $output['message'] = "New challenge list passed successfully.";
-                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
-            } else {
-                $output['success'] = false;
-                $output['data'] = null;
-                $output['message'] = "Data didn't passed correctly!.";
-                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+                $output['data']['challenge'][$index]['question'] = Question::where('challenge_id', $challenge->challenge_id)->where('is_active', 1)->orderBy('id', 'ASC')->get();
             }
+            $output['data']['server_time'] = $date_time;
+            $output['success'] = true;
+            $output['message'] = "New challenge list passed successfully.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
         }  catch (\Exception $e) {
             $output['success'] = false;
             $output['data'] = null;
@@ -591,7 +585,7 @@ class ChallengeController extends Controller
             $data = json_decode($request->getContent(),true);
             $challenge_id = isset($data['challenge_id']) ? intval($data['challenge_id']) : 0;
             $question_id = isset($data['question_id']) ? intval($data['question_id']) : 0;
-            $status = isset($data['status']) ? $data['status'] : 0;
+            $status = isset($data['status']) ? intval($data['status']) : 0;
             $updated_at = date("Y-m-d H:i:s");
 
             if($challenge_id > 0 && $question_id > 0) {
@@ -675,7 +669,6 @@ class ChallengeController extends Controller
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
         }  catch (\Exception $e) {
-            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin.";
@@ -709,7 +702,6 @@ class ChallengeController extends Controller
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
         }  catch (\Exception $e) {
-            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin.";
@@ -723,7 +715,7 @@ class ChallengeController extends Controller
         try {
             $data = json_decode($request->getContent(),true);
             $challenge_id = isset($data['challenge_id']) ? intval($data['challenge_id']) : 0;
-            $status = isset($data['status']) ? $data['status'] : 0;
+            $status = isset($data['status']) ? intval($data['status']) : 0;
             $updated_at = date("Y-m-d H:i:s");
 
             if($challenge_id > 0) {
@@ -747,7 +739,6 @@ class ChallengeController extends Controller
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
         }  catch (\Exception $e) {
-            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin.";
@@ -772,6 +763,47 @@ class ChallengeController extends Controller
 
                 $output['success'] = true;
                 $output['message'] = "User, answer list passed  successfully.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            } else {
+                $output['success'] = false;
+                $output['data'] = null;
+                $output['message'] = "Data didn't passed correctly!.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            }
+        }  catch (\Exception $e) {
+            $output['success'] = false;
+            $output['data'] = null;
+            $output['message'] = "Server error. Please contact admin.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+        }
+    }
+  
+    public function completeQuestion(Request $request)
+    {
+        try {
+            $data = json_decode($request->getContent(),true);
+            $challenge_id = isset($data['challenge_id']) ? intval($data['challenge_id']) : 0;
+            $user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
+            $question_id = isset($data['question_id']) ? intval($data['question_id']) : 0;
+            $your_answer = isset($data['your_answer']) ? intval($data['your_answer']) : 0;
+            $earn_amount = isset($data['earn_amount']) ? intval($data['earn_amount']) : 0;
+            $earn_coin = isset($data['earn_coin']) ? intval($data['earn_coin']) : 0;
+            $updated_at = date("Y-m-d H:i:s");
+
+            if($challenge_id > 0 && $user_id > 0 && $question_id > 0) {
+                $output['success'] = true;
+                if($status == 1) {
+                    $output['message'] = "Challenge activated successfully.";
+                } else {
+                    $status = 0;
+                    $output['message'] = "Challenge deactivated successfully.";
+                }
+                $challenge_data = UserQuestion::where('id', $challenge_id)->orderBy('id', 'DESC')->first();
+                $challenge_data->is_active = $status;
+                $challenge_data->updated_at = $updated_at;
+                $challenge_data->save();
+                $output['data'] = null;
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             } else {
                 $output['success'] = false;
