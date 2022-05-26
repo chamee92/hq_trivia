@@ -22,6 +22,8 @@ class Ledger extends Model
         'status',
         'amount',
         'balance',
+        'coin_amount',
+        'coin_balance',
         'is_active',
         'created_at',
         'updated_at'
