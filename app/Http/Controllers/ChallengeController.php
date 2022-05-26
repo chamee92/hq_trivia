@@ -12,6 +12,7 @@ use App\Models\UserChallenge;
 use App\Models\Question;
 use App\Models\UserQuestion;
 use App\Models\Ledger;
+use App\Models\Payment;
 
 class ChallengeController extends Controller
 {
@@ -882,6 +883,88 @@ class ChallengeController extends Controller
                 $output['success'] = true;
                 $output['data']['user_challenge_id'] = $user_challenge_data->id;
                 $output['message'] = "User, challenge completed successfully.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            } else {
+                $output['success'] = false;
+                $output['data'] = null;
+                $output['message'] = "Data didn't passed correctly!.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            }
+        }  catch (\Exception $e) {
+            dd($e);
+            $output['success'] = false;
+            $output['data'] = null;
+            $output['message'] = "Server error. Please contact admin.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+        }
+    }
+  
+    public function allChallengeLike(Request $request)
+    {
+        try {
+            $data = json_decode($request->getContent(),true);
+            $user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
+
+            if($user_id > 0 ) {
+                $output['data']['challenge_data'] = Challenge::join('user_challenges', 'user_challenges.challenge_id', 'challenges.id')->where('user_challenges.user_id', $user_id)
+                                                ->where('user_challenges.is_active', 1)->where('challenges.is_active', 1)->where('user_challenges.has_like', 1)
+                                                ->select('user_challenges.challenge_id', 'challenges.challenge_name', 'challenges.challenge_Description', 'challenges.image_path', 'challenges.video_path', 'challenges.start_date_time', 
+                                                        'challenges.end_date_time', 'challenges.video_duration', 'challenges.quiz_duration', 'challenges.question_duration', 'challenges.question_start_time', 'challenges.question_end_time',
+                                                        'challenges.total_price', 'challenges.total_coin', 'challenges.question_count', 'challenges.question_price', 'challenges.question_coin', 'challenges.total_watch', 'challenges.total_like', 
+                                                        'user_challenges.has_watched', 'user_challenges.has_like','user_challenges.has_attend_quiz', 'user_challenges.correct_answer_count' , 'user_challenges.wrong_answer_count', 'user_challenges.earn_amount', 
+                                                        'user_challenges.earn_coin')
+                                                ->orderBy('challenges.id', 'DESC')->get();
+
+                $output['success'] = true;
+                $output['message'] = "User, challenge list passed  successfully.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            } else {
+                $output['success'] = false;
+                $output['data'] = null;
+                $output['message'] = "Data didn't passed correctly!.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            }
+        }  catch (\Exception $e) {
+            $output['success'] = false;
+            $output['data'] = null;
+            $output['message'] = "Server error. Please contact admin.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+        }
+    }
+  
+    public function requestPayment(Request $request)
+    {
+        try {
+            $data = json_decode($request->getContent(),true);
+            $user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
+            $description = isset($data['description']) ? $data['description'] : null;
+            $amount = isset($data['amount']) ? doubleval($data['amount']) : 0;
+            
+            $created_at = date("Y-m-d H:i:s");
+
+            if($user_id > 0 && $amount > 0) {
+
+                $payment_data = Payment::create([
+                                    "user_id" => $user_id,
+                                    "description" => $description,
+                                    "amount" => $image_path,
+                                    "paid_amount" => 0,
+                                    "status" => 0,
+                                    "is_active" => 1,
+                                    "created_at" => $created_at,
+                                    "udapted_at" => $created_at
+                                ]);
+
+                $invoice_number = "IN".sprintf("%'.07d", $payment_data->id);
+                $payment_add = Payment::where('id', $payment_data->id)->orderBy('id', 'DESC')->first();
+                $payment_add->invoice_number = $invoice_number;
+                $payment_add->save();
+
+                $output['success'] = true;
+                $output['message'] = "Payment created successfully.";
+                $output['data']['invoice_number'] = $invoice_number;
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             } else {
                 $output['success'] = false;
