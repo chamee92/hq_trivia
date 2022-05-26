@@ -588,11 +588,12 @@ class ChallengeController extends Controller
     {
         try {
             $data = json_decode($request->getContent(),true);
+            $challenge_id = isset($data['challenge_id']) ? intval($data['challenge_id']) : 0;
             $question_id = isset($data['question_id']) ? intval($data['question_id']) : 0;
             $status = isset($data['status']) ? $data['status'] : 0;
             $updated_at = date("Y-m-d H:i:s");
 
-            if($question_id > 0) {
+            if($challenge_id > 0 && $question_id > 0) {
                 $output['success'] = true;
                 if($status == 1) {
                     $output['message'] = "Question activated successfully.";
@@ -613,7 +614,6 @@ class ChallengeController extends Controller
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
         }  catch (\Exception $e) {
-            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin.";
@@ -643,7 +643,6 @@ class ChallengeController extends Controller
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
         }  catch (\Exception $e) {
-            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin.";
