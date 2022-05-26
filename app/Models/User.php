@@ -39,8 +39,13 @@ class User extends Authenticatable implements JWTSubject
         'profile_picture',
         'file_extension',
         'earn_total',
+        'pending_withdraw_total',
         'withdraw_total',
         'earn_balance',
+        'earn_coin_total',
+        'pending_withdraw_coin_total',
+        'withdraw_coin_total',
+        'earn_coin_balance',
         'is_active',
         'created_at',
         'updated_at'

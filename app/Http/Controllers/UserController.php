@@ -287,8 +287,13 @@ class UserController extends Controller
                         'profile_picture' => $profile_picture,
                         'file_extension' => $ext,
                         'earn_total' => 0,
+                        'pending_withdraw_total' => 0,
                         'withdraw_total' => 0,
                         'earn_balance' => 0,
+                        'earn_coin_total' => 0,
+                        'pending_withdraw_coin_total' => 0,
+                        'withdraw_coin_total' => 0,
+                        'earn_coin_balance' => 0,
                         'is_active' => 1, 
                         'created_at' => $date_time,
                         'updated_at' => $date_time
@@ -339,7 +344,8 @@ class UserController extends Controller
         $output['message'] = "User login successfully.";
         if($user->id > 0) {
             $auth_user = User::select('id AS user_id', 'user_type_id','first_name', 'last_name', 'email_address', 'mobile_number', 'login_type', 'push_id', 'device_id', 'os_type', 'created_at',
-                                    'address1', 'address2', 'zip_code', 'profile_picture', 'file_extension', 'earn_total', 'withdraw_total', 'earn_balance', 'is_active', 'updated_at')
+                                    'address1', 'address2', 'zip_code', 'profile_picture', 'file_extension', 'earn_total', 'pendin_withdraw_total', 'withdraw_total', 'earn_balance', 'earn_coin_total', 
+                                    'pendin_withdraw_coin_total', 'withdraw_coin_total', 'earn_coin_balance', 'is_active', 'updated_at')
                                 ->where('id', $user->id)->orderBy('id','DESC')->first();
             if(isset($auth_user->user_id) && intval($auth_user->user_id) > 0) {
                 $output['data']['user_id'] = intval($auth_user->user_id);
@@ -357,9 +363,14 @@ class UserController extends Controller
                 $output['data']['zip_code']  = $auth_user->zip_code;
                 $output['data']['profile_picture']  = $auth_user->profile_picture;      
                 $output['data']['file_extension']  = $auth_user->file_extension; 
-                $output['data']['earn_total']  = doubleval($auth_user->earn_total);        
+                $output['data']['earn_total']  = doubleval($auth_user->earn_total);   
+                $output['data']['pendin_withdraw_total']  = doubleval($auth_user->pendin_withdraw_total);      
                 $output['data']['withdraw_total']  = doubleval($auth_user->withdraw_total);   
-                $output['data']['earn_balance']  = doubleval($auth_user->earn_balance);                   
+                $output['data']['earn_balance']  = doubleval($auth_user->earn_balance);  
+                $output['data']['earn_coin_total']  = doubleval($auth_user->earn_coin_total);       
+                $output['data']['pendin_withdraw_coin_total']  = doubleval($auth_user->pendin_withdraw_coin_total);   
+                $output['data']['withdraw_coin_total']  = doubleval($auth_user->withdraw_coin_total);   
+                $output['data']['earn_coin_balance']  = doubleval($auth_user->earn_coin_balance);                   
                 $output['data']['is_active']  = $auth_user->is_active;
                 $output['data']['created_at']  = $auth_user->created_at;
                 $output['data']['updated_at']  = $auth_user->updated_at;
@@ -389,7 +400,8 @@ class UserController extends Controller
 
             $sql = "SELECT `id` AS 'user_id', `user_type_id`, `first_name`, `last_name`, `mobile_number`, `email_address`,
                     `login_type`, `push_id`, `device_id`, `os_type`, `address1`, `address2`, `zip_code`, `profile_picture`, 
-                    `file_extension`, `earn_total`, `withdraw_total`, `earn_balance`, `is_active`, `created_at`, `updated_at`
+                    `file_extension`, `earn_total`, `pending_withdraw_total`, `withdraw_total`, `earn_balance`, `earn_coin_total`, 
+                    `pending_withdraw_coin_total`, `withdraw_coin_total`, `earn_coin_balance`, `is_active`, `created_at`, `updated_at`
                     FROM `users`
                     WHERE (`is_active` = 1 OR  `is_active` = 0)";
             if($user_type_id > 0) {

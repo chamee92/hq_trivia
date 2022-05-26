@@ -20,6 +20,8 @@ class Payment extends Model
         'description',
         'amount',
         'paid_amount',
+        'coin_amount',
+        'paid_coin_amount',
         'status',
         'transaction_data',
         'is_active',

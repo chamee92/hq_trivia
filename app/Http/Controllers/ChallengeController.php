@@ -866,6 +866,8 @@ class ChallengeController extends Controller
                     $last_ledger = Ledger::select('balance')->where('is_active', 1)->where('user_id', $user_id)->orderBy('id', 'DESC')->first();
                     $last_balance = isset($last_ledger->balance) ? ($last_ledger->balance) : 0.00;
                     $balance = $last_balance + $earn_amount;
+                    $last_coin_balance = isset($last_ledger->coin_balance) ? ($last_ledger->coin_balance) : 0.00;
+                    $coin_balance = $last_coin_balance + $earn_coin;
                     /**Add payment ledger */
                     $ledger = Ledger::create([
                                            'user_id' => $user_id, 
@@ -874,11 +876,28 @@ class ChallengeController extends Controller
                                            'description' => $payment_description, 
                                            'amount' => $earn_amount, 
                                            'balance' => $balance, 
+                                           'coin_amount' => $earn_coin, 
+                                           'coin_balance' => $coin_balance, 
                                            'status' => 1,
                                            'is_active' => 1,
                                            'created_at' => $updated_at,
                                            'updated_at' => $updated_at
                                         ]);
+
+                    $user_data = User::where('id', $user_id)->orderBy('id', 'DESC')->first();
+                    if(isset($user_data->id)) {
+                        $earn_total = doubleval($user_data->earn_total) + $earn_amount;
+                        $earn_balance = doubleval($user_data->earn_balance) + $earn_amount;
+                        $earn_coin_total = doubleval($user_data->earn_coin_total) + $earn_coin;
+                        $earn_coin_balance = doubleval($user_data->earn_coin_balance) + $earn_coin;
+                        $user_data->earn_total = $earn_total;
+                        $user_data->earn_balance = $earn_balance;
+                        $user_data->earn_coin_total = $earn_coin_total;
+                        $user_data->earn_coin_balance = $earn_coin_balance;
+                        $user_data->updated_at = $updated_at;
+                        $user_data->save();
+                    }
+                    
                 }                     
                 $output['success'] = true;
                 $output['data']['user_challenge_id'] = $user_challenge_data->id;
@@ -941,6 +960,7 @@ class ChallengeController extends Controller
             $user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
             $description = isset($data['description']) ? $data['description'] : null;
             $amount = isset($data['amount']) ? doubleval($data['amount']) : 0;
+            $coin_amount = isset($data['coin_amount']) ? doubleval($data['coin_amount']) : 0;
             
             $created_at = date("Y-m-d H:i:s");
 
@@ -949,8 +969,10 @@ class ChallengeController extends Controller
                 $payment_data = Payment::create([
                                     "user_id" => $user_id,
                                     "description" => $description,
-                                    "amount" => $image_path,
+                                    "amount" => $amount,
                                     "paid_amount" => 0,
+                                    "coin_amount" => $coin_amount,
+                                    "paid_coin_amount" => 0,
                                     "status" => 0,
                                     "is_active" => 1,
                                     "created_at" => $created_at,
@@ -961,6 +983,43 @@ class ChallengeController extends Controller
                 $payment_add = Payment::where('id', $payment_data->id)->orderBy('id', 'DESC')->first();
                 $payment_add->invoice_number = $invoice_number;
                 $payment_add->save();
+
+                $payment_description = "Payment Request(". $invoice_number .")";
+                /**Fee ledger part */
+                $last_ledger = Ledger::select('balance')->where('is_active', 1)->where('user_id', $user_id)->orderBy('id', 'DESC')->first();
+                $last_balance = isset($last_ledger->balance) ? ($last_ledger->balance) : 0.00;
+                $balance = $last_balance - $amount;
+                $last_coin_balance = isset($last_ledger->coin_balance) ? ($last_ledger->coin_balance) : 0.00;
+                $coin_balance = $last_coin_balance - $coin_amount;
+                /**Add payment ledger */
+                $ledger = Ledger::create([
+                                       'user_id' => $user_id, 
+                                       'payment_type_id' => 2,
+                                       'payment_id' => $payment_data->id, 
+                                       'description' => $payment_description, 
+                                       'amount' => $amount, 
+                                       'balance' => $balance, 
+                                       'coin_amount' => $coin_amount, 
+                                       'coin_balance' => $coin_balance, 
+                                       'status' => 0,
+                                       'is_active' => 1,
+                                       'created_at' => $updated_at,
+                                       'updated_at' => $updated_at
+                                    ]);
+
+                $user_data = User::where('id', $user_id)->orderBy('id', 'DESC')->first();
+                if(isset($user_data->id)) {
+                    $pending_withdraw_total = doubleval($user_data->pending_withdraw_total) + $amount;
+                    $earn_balance = doubleval($user_data->earn_balance) - $amount;
+                    $pending_withdraw_coin_total = doubleval($user_data->pending_withdraw_coin_total) + $coin_amount;
+                    $earn_coin_balance = doubleval($user_data->earn_coin_balance) - $coin_amount;
+                    $user_data->pending_withdraw_total = $pending_withdraw_total;
+                    $user_data->earn_balance = $earn_balance;
+                    $user_data->pending_withdraw_coin_total = $pending_withdraw_coin_total;
+                    $user_data->earn_coin_balance = $earn_coin_balance;
+                    $user_data->updated_at = $updated_at;
+                    $user_data->save();
+                }
 
                 $output['success'] = true;
                 $output['message'] = "Payment created successfully.";
