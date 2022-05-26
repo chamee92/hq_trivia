@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use DB;
 use App\Models\Challenge;
+use App\Models\User;
 use App\Models\UserChallenge;
 use App\Models\Question;
 use App\Models\UserQuestion;
