@@ -9,6 +9,7 @@ use DB;
 use App\Models\Challenge;
 use App\Models\UserChallenge;
 use App\Models\Question;
+use App\Models\UserQuestion;
 
 class ChallengeController extends Controller
 {
@@ -72,7 +73,7 @@ class ChallengeController extends Controller
 
                 $output['success'] = true;
                 $output['message'] = "Challenge created successfully.";
-                $output['data']['chalange_id'] = $challenge_data->id;
+                $output['data']['challenge_id'] = $challenge_data->id;
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             } else {
                 $output['success'] = false;
@@ -409,7 +410,7 @@ class ChallengeController extends Controller
                 $output['data']['server_time'] = $date_time;
                 $output['data']['question'] = Question::select("id AS question_id", "question", "answer1", "answer2", "answer3", "correct_answer")->where('challenge_id', $output['data']['challenge_id'])->where('is_active', 1)->orderBy('id', 'ASC')->get();
                 $output['success'] = true;
-                $output['message'] = "Chalange data passed successfully.";
+                $output['message'] = "Challenge data passed successfully.";
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             } else {
                 $output['success'] = false;
@@ -484,7 +485,7 @@ class ChallengeController extends Controller
     public function newchallengeList(Request $request)
     {
         try {
-            $data = $request->input();
+            $data = json_decode($request->getContent(),true);
             $limit =  isset($data['limit']) ? intval($data['limit']): 100;
             $date_time = date("Y-m-d H:i:s");
             $sql = "SELECT c.`id` AS 'challenge_id', c.`challenge_name`, c.`challenge_Description`, c.`image_path`, c.`video_path`, 
@@ -539,22 +540,167 @@ class ChallengeController extends Controller
         }
     }
   
-    public function viewChallengeUserList(Request $request)
+    public function addQuestion(Request $request)
     {
         try {
-            $data = $request->input();
+            $data = json_decode($request->getContent(),true);
+            $challenge_id = isset($data['challenge_id']) ? intval($data['challenge_id']) : 0;
+            $question = isset($data['question']) ? $data['question'] : null;
+            $answer1 = isset($data['answer1']) ? $data['answer1'] : null;
+            $answer2 = isset($data['answer2']) ? $data['answer2'] : null;
+            $answer3 = isset($data['answer3']) ? $data['answer3'] : null;
+            $correct_answer = isset($data['correct_answer']) ? intval($data['correct_answer']) : 0;
+            $created_at = date("Y-m-d H:i:s");
+
+            if($challenge_id > 0 && $question != null && $answer1 != null && $answer2 != null && $answer3 != null && $correct_answer > 0 ) {
+                $question_data = Question::create([
+                                        "challenge_id" => $challenge_id,
+                                        "question" => $question,
+                                        "answer1" => $answer1,
+                                        "answer2" => $answer2,
+                                        "answer3" => $answer3,
+                                        "correct_answer" => $correct_answer,
+                                        "is_active" => 1,
+                                        "created_at" => $created_at,
+                                        "updated_at" => $created_at
+                                    ]);
+
+                $output['success'] = true;
+                $output['message'] = "Question data added successfully.";
+                $output['data']['question_id'] = $question_data->id;
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            } else {
+                $output['success'] = false;
+                $output['data'] = null;
+                $output['message'] = "Data didn't passed correctly!.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            }
+        }  catch (\Exception $e) {
+            $output['success'] = false;
+            $output['data'] = null;
+            $output['message'] = "Server error. Please contact admin.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+        }
+    }
+  
+    public function deleteQuestion(Request $request)
+    {
+        try {
+            $data = json_decode($request->getContent(),true);
+            $question_id = isset($data['question_id']) ? intval($data['question_id']) : 0;
+            $status = isset($data['status']) ? $data['status'] : 0;
+            $updated_at = date("Y-m-d H:i:s");
+
+            if($question_id > 0) {
+                $output['success'] = true;
+                if($status == 1) {
+                    $output['message'] = "Question activated successfully.";
+                } else {
+                    $status = 0;
+                    $output['message'] = "Question deactivated successfully.";
+                }
+                $question_data = Question::where('id', $question_id)->orderBy('id', 'DESC')->first();
+                $question_data->is_active = $status;
+                $question_data->updated_at = $updated_at;
+                $question_data->save();
+                $output['data'] = null;
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            } else {
+                $output['success'] = false;
+                $output['data'] = null;
+                $output['message'] = "Data didn't passed correctly!.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            }
+        }  catch (\Exception $e) {
+            dd($e);
+            $output['success'] = false;
+            $output['data'] = null;
+            $output['message'] = "Server error. Please contact admin.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+        }
+    }
+  
+    public function viewQuestion(Request $request)
+    {
+        try {
+            $data = json_decode($request->getContent(),true);
             $challenge_id = isset($data['challenge_id']) ? intval($data['challenge_id']) : 0;
 
             if($challenge_id > 0 ) {
-                $user_data = User::join('user_challenges', 'user_challenges.user_id', '')->where('id', $user_id)->orderBy('id', 'DESC')->first();
-                $new_password = bcrypt($password);
-                $user_data->password = $new_password;
-                $user_data->normal_password = $new_password;
-                $user_data->updated_at = $updated_at;
-                $user_data->save();
+                $output['data']['question_data'] = Question::select('id AS question_id', 'question', 'answer1', 'answer2', 'answer3', 'correct_answer')
+                                                            ->where('challenge_id', $challenge_id)->where('is_active', 1)
+                                                            ->orderBy('id', 'ASC')->get();
+
                 $output['success'] = true;
-                $output['message'] = "User password change successfully.";
+                $output['message'] = "Question data passed successfully.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            } else {
+                $output['success'] = false;
                 $output['data'] = null;
+                $output['message'] = "Data didn't passed correctly!.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            }
+        }  catch (\Exception $e) {
+            dd($e);
+            $output['success'] = false;
+            $output['data'] = null;
+            $output['message'] = "Server error. Please contact admin.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+        }
+    }
+  
+    public function viewChallengeUserList(Request $request)
+    {
+        try {
+            $data = json_decode($request->getContent(),true);
+            $challenge_id = isset($data['challenge_id']) ? intval($data['challenge_id']) : 0;
+
+            if($challenge_id > 0 ) {
+                $output['data']['user_data'] = User::join('user_challenges', 'user_challenges.user_id', 'users.id')->where('user_challenges.challenge_id', $challenge_id)->where('user_challenges.is_active', 1)->where('challenges.is_active', 1)
+                                                ->select('user_challenges.user_id', 'users.first_name', 'users.last_name', 'users.mobile_number', 'users.email_address', 'users.address1', 
+                                                        'users.address2', 'users.zip_code', 'users.profile_picture', 'user_challenges.has_watched', 'user_challenges.has_like', 
+                                                        'user_challenges.has_attend_quiz', 'user_challenges.correct_answer_count' , 'user_challenges.wrong_answer_count', 'user_challenges.earn_amount', 'user_challenges.earn_coin')
+                                                ->orderBy('users.id', 'DESC')->get();
+
+                $output['success'] = true;
+                $output['message'] = "Challenge, user list passed successfully.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            } else {
+                $output['success'] = false;
+                $output['data'] = null;
+                $output['message'] = "Data didn't passed correctly!.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            }
+        }  catch (\Exception $e) {
+            dd($e);
+            $output['success'] = false;
+            $output['data'] = null;
+            $output['message'] = "Server error. Please contact admin.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+        }
+    }
+  
+    public function viewUserChallengeList(Request $request)
+    {
+        try {
+            $data = json_decode($request->getContent(),true);
+            $user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
+
+            if($user_id > 0 ) {
+                $output['data']['challenge_data'] = Challenge::join('user_challenges', 'user_challenges.challenge_id', 'challenges.id')->where('user_challenges.user_id', $user_id)->where('user_challenges.is_active', 1)->where('challenges.is_active', 1)
+                                                ->select('user_challenges.challenge_id', 'challenges.challenge_name', 'challenges.challenge_Description', 'challenges.image_path', 'challenges.video_path', 'challenges.start_date_time', 
+                                                        'challenges.end_date_time', 'challenges.video_duration', 'challenges.quiz_duration', 'challenges.question_duration', 'challenges.question_start_time', 'challenges.question_end_time',
+                                                        'challenges.total_price', 'challenges.total_coin', 'challenges.question_count', 'challenges.question_price', 'challenges.question_coin', 'challenges.total_watch', 'challenges.total_like', 
+                                                        'user_challenges.has_watched', 'user_challenges.has_like','user_challenges.has_attend_quiz', 'user_challenges.correct_answer_count' , 'user_challenges.wrong_answer_count', 'user_challenges.earn_amount', 
+                                                        'user_challenges.earn_coin')
+                                                ->orderBy('challenges.id', 'DESC')->get();
+
+                $output['success'] = true;
+                $output['message'] = "User, challenge list passed  successfully.";
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             } else {
                 $output['success'] = false;
@@ -575,21 +721,57 @@ class ChallengeController extends Controller
     public function deleteChallenge(Request $request)
     {
         try {
-            $data = $request->input();
-            $user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
-            $password = isset($data['user_id']) ? $data['password'] : null;
+            $data = json_decode($request->getContent(),true);
+            $challenge_id = isset($data['challenge_id']) ? intval($data['challenge_id']) : 0;
+            $status = isset($data['status']) ? $data['status'] : 0;
             $updated_at = date("Y-m-d H:i:s");
 
-            if($user_id > 0 && $password != null ) {
-                $user_data = User::where('id', $user_id)->orderBy('id', 'DESC')->first();
-                $new_password = bcrypt($password);
-                $user_data->password = $new_password;
-                $user_data->normal_password = $new_password;
-                $user_data->updated_at = $updated_at;
-                $user_data->save();
+            if($challenge_id > 0) {
                 $output['success'] = true;
-                $output['message'] = "User password change successfully.";
+                if($status == 1) {
+                    $output['message'] = "Challenge activated successfully.";
+                } else {
+                    $status = 0;
+                    $output['message'] = "Challenge deactivated successfully.";
+                }
+                $challenge_data = Challenge::where('id', $challenge_id)->orderBy('id', 'DESC')->first();
+                $challenge_data->is_active = $status;
+                $challenge_data->updated_at = $updated_at;
+                $challenge_data->save();
                 $output['data'] = null;
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            } else {
+                $output['success'] = false;
+                $output['data'] = null;
+                $output['message'] = "Data didn't passed correctly!.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            }
+        }  catch (\Exception $e) {
+            dd($e);
+            $output['success'] = false;
+            $output['data'] = null;
+            $output['message'] = "Server error. Please contact admin.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+        }
+    }
+  
+    public function viewChallengeUserQuestion(Request $request)
+    {
+        try {
+            $data = json_decode($request->getContent(),true);
+            $user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
+            $challenge_id = isset($data['challenge_id']) ? intval($data['challenge_id']) : 0;
+
+            if($user_id > 0 && $challenge_id > 0) {
+                $output['data']['answer_data'] = Question::join('user_questions', 'user_questions.question_id', 'questions.id')->where('user_questions.user_id', $user_id)
+                                                    ->where('user_questions.challenge_id', $challenge_id)->where('user_questions.is_active', 1)->where('questions.is_active', 1)
+                                                    ->select('questions.id AS question_id', 'questions.question', 'questions.answer1', 'questions.answer2', 'questions.answer3', 'questions.correct_answer', 
+                                                            'user_questions.your_answer', 'user_questions.is_correct', 'user_questions.earn_amount', 'user_questions.earn_coin')
+                                                    ->orderBy('questions.id', 'ASC')->get();
+
+                $output['success'] = true;
+                $output['message'] = "User, answer list passed  successfully.";
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             } else {
                 $output['success'] = false;
