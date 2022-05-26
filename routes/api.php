@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ChallengeController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -25,5 +26,19 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('user/data', [UserController::class, 'getAuthenticatedUser']);
     Route::post('user/list', [UserController::class, 'usersData']);
     Route::post('user/manage', [UserController::class, 'userManage']);
+
+    
+    Route::post('challenge/add', [ChallengeController::class, 'addChallenge']);
+    Route::post('challenge/image/add', [ChallengeController::class, 'addChallengeImage']);
+    Route::post('challenge/video/add', [ChallengeController::class, 'addChallengeVideo']);
+    Route::post('challenge/watch/add', [ChallengeController::class, 'addChallengeWatch']);
+    Route::post('challenge/like/add', [ChallengeController::class, 'addChallengeLike']);
+    Route::post('challenge/edit', [ChallengeController::class, 'editChallenge']);
+    Route::post('challenge/next', [ChallengeController::class, 'nextChallenge']);
+    Route::post('challenge/old/list', [ChallengeController::class, 'oldChallengeList']);
+    Route::post('challenge/new/list', [ChallengeController::class, 'newChallengeList']);
+    Route::post('challenge/user/list', [ChallengeController::class, 'viewChallengeUserList']);
+    Route::post('challenge/user/question', [ChallengeController::class, 'viewChallengeUserQuestion']);
+    Route::post('challenge/delete', [ChallengeController::class, 'deleteChallenge']);
 
 });
