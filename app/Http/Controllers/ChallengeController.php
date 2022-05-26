@@ -32,6 +32,8 @@ class ChallengeController extends Controller
             $question_count = isset($data['question_count']) ? intval($data['question_count']) : 0;
             $question_price = isset($data['question_price']) ? doubleval($data['question_price']) : 0;
             $question_coin = isset($data['question_coin']) ? doubleval($data['question_coin']) : 0;
+            
+            $created_at = date("Y-m-d H:i:s");
 
             if($challenge_name != null ) {
                 //file upload
