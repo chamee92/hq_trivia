@@ -821,7 +821,6 @@ class ChallengeController extends Controller
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
         }  catch (\Exception $e) {
-            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin.";
@@ -863,7 +862,7 @@ class ChallengeController extends Controller
                     $payment_description = "Quiz winner price";
 
                     /**Fee ledger part */
-                    $last_ledger = Ledger::select('balance')->where('is_active', 1)->where('user_id', $chuser_idamber_id)->orderBy('id', 'DESC')->first();
+                    $last_ledger = Ledger::select('balance')->where('is_active', 1)->where('user_id', $user_id)->orderBy('id', 'DESC')->first();
                     $last_balance = isset($last_ledger->balance) ? ($last_ledger->balance) : 0.00;
                     $balance = $last_balance + $earn_amount;
                     /**Add payment ledger */
