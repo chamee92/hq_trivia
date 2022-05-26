@@ -496,7 +496,7 @@ class UserController extends Controller
             $file_extension = isset($data['file_extension']) ? $data['file_extension'] : null;
             $date_time = date('Y-m-d H:i:s');
 
-            if($user_id > 0 && $first_name != null && $mobile_number != null && $address1 != null && $address2 != null && $zip_code != null) {
+            if($user_id > 0 && $first_name != null  && $address1 != null && $address2 != null && $zip_code != null) {
                 //file upload
                 if($request->file()) {
                     $ext = pathinfo($request->profile_picture->getClientOriginalName(), PATHINFO_EXTENSION);
