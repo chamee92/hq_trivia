@@ -933,7 +933,7 @@ class ChallengeController extends Controller
                                                         'challenges.total_price', 'challenges.total_coin', 'challenges.question_count', 'challenges.question_price', 'challenges.question_coin', 'challenges.total_watch', 'challenges.total_like', 
                                                         'user_challenges.has_watched', 'user_challenges.has_like','user_challenges.has_attend_quiz', 'user_challenges.correct_answer_count' , 'user_challenges.wrong_answer_count', 'user_challenges.earn_amount', 
                                                         'user_challenges.earn_coin')
-                                                ->orderBy('challenges.id', 'DESC')->get();
+                                                ->orderBy('challenges.id1', 'DESC')->get();
 
                 $output['success'] = true;
                 $output['message'] = "User, challenge list passed  successfully.";
@@ -945,6 +945,7 @@ class ChallengeController extends Controller
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
         }  catch (\Exception $e) {
+            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin.";
@@ -1003,8 +1004,8 @@ class ChallengeController extends Controller
                                        'coin_balance' => $coin_balance, 
                                        'status' => 0,
                                        'is_active' => 1,
-                                       'created_at' => $updated_at,
-                                       'updated_at' => $updated_at
+                                       'created_at' => $created_at,
+                                       'updated_at' => $created_at
                                     ]);
 
                 $user_data = User::where('id', $user_id)->orderBy('id', 'DESC')->first();
@@ -1017,7 +1018,7 @@ class ChallengeController extends Controller
                     $user_data->earn_balance = $earn_balance;
                     $user_data->pending_withdraw_coin_total = $pending_withdraw_coin_total;
                     $user_data->earn_coin_balance = $earn_coin_balance;
-                    $user_data->updated_at = $updated_at;
+                    $user_data->updated_at = $created_at;
                     $user_data->save();
                 }
 
