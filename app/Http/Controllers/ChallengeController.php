@@ -933,7 +933,7 @@ class ChallengeController extends Controller
                                                         'challenges.total_price', 'challenges.total_coin', 'challenges.question_count', 'challenges.question_price', 'challenges.question_coin', 'challenges.total_watch', 'challenges.total_like', 
                                                         'user_challenges.has_watched', 'user_challenges.has_like','user_challenges.has_attend_quiz', 'user_challenges.correct_answer_count' , 'user_challenges.wrong_answer_count', 'user_challenges.earn_amount', 
                                                         'user_challenges.earn_coin')
-                                                ->orderBy('challenges.id1', 'DESC')->get();
+                                                ->orderBy('challenges.id', 'DESC')->get();
 
                 $output['success'] = true;
                 $output['message'] = "User, challenge list passed  successfully.";
@@ -1033,7 +1033,6 @@ class ChallengeController extends Controller
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
         }  catch (\Exception $e) {
-            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin.";
