@@ -987,7 +987,7 @@ class ChallengeController extends Controller
 
                 $payment_description = "Payment Request(". $invoice_number .")";
                 /**Fee ledger part */
-                $last_ledger = Ledger::select('balance')->where('is_active', 1)->where('user_id', $user_id)->orderBy('id', 'DESC')->first();
+                $last_ledger = Ledger::where('is_active', 1)->where('user_id', $user_id)->orderBy('id', 'DESC')->first();
                 $last_balance = isset($last_ledger->balance) ? ($last_ledger->balance) : 0.00;
                 $balance = $last_balance - $amount;
                 $last_coin_balance = isset($last_ledger->coin_balance) ? ($last_ledger->coin_balance) : 0.00;
