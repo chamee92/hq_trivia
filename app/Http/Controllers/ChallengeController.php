@@ -659,7 +659,7 @@ class ChallengeController extends Controller
             $challenge_id = isset($data['challenge_id']) ? intval($data['challenge_id']) : 0;
 
             if($challenge_id > 0 ) {
-                $output['data']['user_data'] = User::join('user_challenges', 'user_challenges.user_id', 'users.id')->where('user_challenges.challenge_id', $challenge_id)->where('user_challenges.is_active', 1)->where('challenges.is_active', 1)
+                $output['data']['user_data'] = User::join('user_challenges', 'user_challenges.user_id', 'users.id')->where('user_challenges.challenge_id', $challenge_id)->where('user_challenges.is_active', 1)->where('users.is_active', 1)
                                                 ->select('user_challenges.user_id', 'users.first_name', 'users.last_name', 'users.mobile_number', 'users.email_address', 'users.address1', 
                                                         'users.address2', 'users.zip_code', 'users.profile_picture', 'user_challenges.has_watched', 'user_challenges.has_like', 
                                                         'user_challenges.has_attend_quiz', 'user_challenges.correct_answer_count' , 'user_challenges.wrong_answer_count', 'user_challenges.earn_amount', 'user_challenges.earn_coin')
