@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\UserChallenge;
 use App\Models\Question;
 use App\Models\UserQuestion;
+use App\Models\Ledger;
 
 class ChallengeController extends Controller
 {
@@ -787,23 +788,101 @@ class ChallengeController extends Controller
             $user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
             $question_id = isset($data['question_id']) ? intval($data['question_id']) : 0;
             $your_answer = isset($data['your_answer']) ? intval($data['your_answer']) : 0;
-            $earn_amount = isset($data['earn_amount']) ? intval($data['earn_amount']) : 0;
-            $earn_coin = isset($data['earn_coin']) ? intval($data['earn_coin']) : 0;
+            $earn_amount = isset($data['earn_amount']) ? doubleval($data['earn_amount']) : 0;
+            $earn_coin = isset($data['earn_coin']) ? doubleval($data['earn_coin']) : 0;
+            $is_correct = isset($data['is_correct']) ? intval($data['is_correct']) : 0;
             $updated_at = date("Y-m-d H:i:s");
 
             if($challenge_id > 0 && $user_id > 0 && $question_id > 0) {
+                $user_question_data = UserQuestion::updateOrCreate(
+                                        [
+                                            'user_id' => $user_id,
+                                            'challenge_id' => $challenge_id,
+                                            'question_id' => $question_id
+                                        ],
+                                        [
+                                            'your_answer' => $your_answer,
+                                            'earn_amount' => $earn_amount,
+                                            'earn_coin' => $earn_coin,
+                                            'is_correct' => $is_correct,
+                                            'is_active' => 1,
+                                            'created_at' => $updated_at,
+                                            'updated_at' => $updated_at
+                                        ]);
+                                        
                 $output['success'] = true;
-                if($status == 1) {
-                    $output['message'] = "Challenge activated successfully.";
-                } else {
-                    $status = 0;
-                    $output['message'] = "Challenge deactivated successfully.";
-                }
-                $challenge_data = UserQuestion::where('id', $challenge_id)->orderBy('id', 'DESC')->first();
-                $challenge_data->is_active = $status;
-                $challenge_data->updated_at = $updated_at;
-                $challenge_data->save();
+                $output['data']['user_question_id'] = $user_question_data->id;
+                $output['message'] = "User, question completed successfully.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            } else {
+                $output['success'] = false;
                 $output['data'] = null;
+                $output['message'] = "Data didn't passed correctly!.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            }
+        }  catch (\Exception $e) {
+            dd($e);
+            $output['success'] = false;
+            $output['data'] = null;
+            $output['message'] = "Server error. Please contact admin.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+        }
+    }
+  
+    public function completeChallenge(Request $request)
+    {
+        try {
+            $data = json_decode($request->getContent(),true);
+            $challenge_id = isset($data['challenge_id']) ? intval($data['challenge_id']) : 0;
+            $user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
+            $correct_answer_count = isset($data['correct_answer_count']) ? intval($data['correct_answer_count']) : 0;
+            $wrong_answer_count = isset($data['wrong_answer_count']) ? intval($data['wrong_answer_count']) : 0;
+            $earn_amount = isset($data['earn_amount']) ? doubleval($data['earn_amount']) : 0;
+            $earn_coin = isset($data['earn_coin']) ? doubleval($data['earn_coin']) : 0;
+            $has_payment = isset($data['has_payment']) ? intval($data['has_payment']) : 0;
+            $updated_at = date("Y-m-d H:i:s");
+
+            if($challenge_id > 0 && $user_id > 0) {
+                $user_challenge_data = UserChallenge::updateOrCreate(
+                                        [
+                                            'user_id' => $user_id,
+                                            'challenge_id' => $challenge_id
+                                        ],
+                                        [
+                                            'has_attend_quiz' => 1,
+                                            'correct_answer_count' => $correct_answer_count,
+                                            'wrong_answer_count' => $wrong_answer_count,
+                                            'earn_amount' => $earn_amount,
+                                            'earn_coin' => $earn_coin,
+                                            'is_active' => 1,
+                                            'created_at' => $updated_at,
+                                            'updated_at' => $updated_at
+                                        ]);
+                if($has_payment == 1 && $earn_amount > 0) {
+                    $payment_description = "Quiz winner price";
+
+                    /**Fee ledger part */
+                    $last_ledger = Ledger::select('balance')->where('is_active', 1)->where('user_id', $chuser_idamber_id)->orderBy('id', 'DESC')->first();
+                    $last_balance = isset($last_ledger->balance) ? ($last_ledger->balance) : 0.00;
+                    $balance = $last_balance + $earn_amount;
+                    /**Add payment ledger */
+                    $ledger = Ledger::create([
+                                           'user_id' => $user_id, 
+                                           'payment_type_id' => 1,
+                                           'payment_id' => $user_challenge_data->id, 
+                                           'description' => $payment_description, 
+                                           'amount' => $earn_amount, 
+                                           'balance' => $balance, 
+                                           'status' => 1,
+                                           'is_active' => 1,
+                                           'created_at' => $updated_at,
+                                           'updated_at' => $updated_at
+                                        ]);
+                }                     
+                $output['success'] = true;
+                $output['data']['user_challenge_id'] = $user_challenge_data->id;
+                $output['message'] = "User, challenge completed successfully.";
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             } else {
                 $output['success'] = false;
