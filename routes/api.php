@@ -52,8 +52,8 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('challenge/like/all', [ChallengeController::class, 'allChallengeLike']);
     
     Route::post('payment/request', [ChallengeController::class, 'requestPayment']);
-    /*Route::post('payment/confirm', [ChallengeController::class, 'confirmPayment']);
-    Route::post('payment/pending', [ChallengeController::class, 'pendingPayment']);
+    Route::post('payment/confirm', [ChallengeController::class, 'confirmPayment']);
+    /*Route::post('payment/pending', [ChallengeController::class, 'pendingPayment']);
     Route::post('payment/complete', [ChallengeController::class, 'completePayment']);
     Route::post('payment/reject', [ChallengeController::class, 'rejectPayment']);
     Route::post('ledger/view', [ChallengeController::class, 'viewLedger']);*/

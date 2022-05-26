@@ -985,7 +985,7 @@ class ChallengeController extends Controller
                 $payment_add->invoice_number = $invoice_number;
                 $payment_add->save();
 
-                $payment_description = "Payment Request(". $invoice_number .")";
+                $payment_description = "Payment Request (". $invoice_number .")";
                 /**Fee ledger part */
                 $last_ledger = Ledger::where('is_active', 1)->where('user_id', $user_id)->orderBy('id', 'DESC')->first();
                 $last_balance = isset($last_ledger->balance) ? ($last_ledger->balance) : 0.00;
@@ -1033,6 +1033,101 @@ class ChallengeController extends Controller
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
         }  catch (\Exception $e) {
+            $output['success'] = false;
+            $output['data'] = null;
+            $output['message'] = "Server error. Please contact admin.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+        }
+    }
+  
+    public function confirmPayment(Request $request)
+    {
+        try {
+            $data = json_decode($request->getContent(),true);
+            $payment_id = isset($data['payment_id']) ? intval($data['payment_id']) : 0;
+            $status = isset($data['status']) ? intval($data['status']) : 0;
+            $description = isset($data['description']) ? $data['description'] : null;
+            
+            $created_at = date("Y-m-d H:i:s");
+
+            if($payment_id > 0) {
+                $payment_data = Payment::where('id', $payment_id)->orderBy('id', 'DESC')->first();
+                $invoice_number = $payment_data->invoice_number;
+                $amount = doubleval($payment_data->amount);
+                $coin_amount = doubleval($payment_data->coin_amount);
+                if($status == 1) {
+                    $payment_data->status = $status;
+                    $output['message'] = "Payment accepted successfully.";
+    
+                    $user_data = User::where('id', $user_id)->orderBy('id', 'DESC')->first();
+                    if(isset($user_data->id)) {
+                        $pending_withdraw_total = doubleval($user_data->pending_withdraw_total) - $amount;
+                        $withdraw_total = doubleval($user_data->withdraw_total) + $amount;
+                        $pending_withdraw_coin_total = doubleval($user_data->pending_withdraw_coin_total) - $coin_amount;
+                        $withdraw_coin_total = doubleval($user_data->withdraw_coin_total) + $coin_amount;
+                        $user_data->pending_withdraw_total = $pending_withdraw_total;
+                        $user_data->withdraw_total = $withdraw_total;
+                        $user_data->pending_withdraw_coin_total = $pending_withdraw_coin_total;
+                        $user_data->withdraw_coin_total = $withdraw_coin_total;
+                        $user_data->updated_at = $created_at;
+                        $user_data->save();
+                    }
+                } else {
+                    $status = 0;
+                    $payment_data->status = $status;
+                    $output['message'] = "Payment rejected successfully.";
+                    $payment_description = "Payment Rejected (". $invoice_number .")";
+                    /**Fee ledger part */
+                    $last_ledger = Ledger::where('is_active', 1)->where('user_id', $user_id)->orderBy('id', 'DESC')->first();
+                    $last_balance = isset($last_ledger->balance) ? ($last_ledger->balance) : 0.00;
+                    $balance = $last_balance + $amount;
+                    $last_coin_balance = isset($last_ledger->coin_balance) ? ($last_ledger->coin_balance) : 0.00;
+                    $coin_balance = $last_coin_balance + $coin_amount;
+                    /**Add payment ledger */
+                    $ledger = Ledger::create([
+                                           'user_id' => $user_id, 
+                                           'payment_type_id' => 3,
+                                           'payment_id' => $payment_id, 
+                                           'description' => $payment_description, 
+                                           'amount' => $amount, 
+                                           'balance' => $balance, 
+                                           'coin_amount' => $coin_amount, 
+                                           'coin_balance' => $coin_balance, 
+                                           'status' => 1,
+                                           'is_active' => 1,
+                                           'created_at' => $created_at,
+                                           'updated_at' => $created_at
+                                        ]);
+    
+                    $user_data = User::where('id', $user_id)->orderBy('id', 'DESC')->first();
+                    if(isset($user_data->id)) {
+                        $pending_withdraw_total = doubleval($user_data->pending_withdraw_total) - $amount;
+                        $earn_balance = doubleval($user_data->earn_balance) + $amount;
+                        $pending_withdraw_coin_total = doubleval($user_data->pending_withdraw_coin_total) - $coin_amount;
+                        $earn_coin_balance = doubleval($user_data->earn_coin_balance) + $coin_amount;
+                        $user_data->pending_withdraw_total = $pending_withdraw_total;
+                        $user_data->earn_balance = $earn_balance;
+                        $user_data->pending_withdraw_coin_total = $pending_withdraw_coin_total;
+                        $user_data->earn_coin_balance = $earn_coin_balance;
+                        $user_data->updated_at = $created_at;
+                        $user_data->save();
+                    }
+                }
+                $payment_data->transaction_data = $description;
+                $payment_data->save();
+
+                $output['success'] = true;
+                $output['data'] = null;
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            } else {
+                $output['success'] = false;
+                $output['data'] = null;
+                $output['message'] = "Data didn't passed correctly!.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            }
+        }  catch (\Exception $e) {
+            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin.";
