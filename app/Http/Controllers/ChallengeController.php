@@ -380,7 +380,7 @@ class ChallengeController extends Controller
                     c.`question_start_time`, c.`question_end_time`, c.`total_price`, c.`total_coin`, c.`question_count`, 
                     c.`question_price`, c.`question_coin`, c.`total_watch`, c.`total_like`
                     FROM `challenges` AS c 
-                    WHERE c.`is_Active` = 1 AND c.`start_date_time` >= '".$date_time."' 
+                    WHERE c.`is_Active` = 1 AND c.`question_end_time` >= '".$date_time."' 
                     ORDER BY c.`id` ASC 
                     LIMIT 1";
             $challenge_data = DB::select($sql);
@@ -409,7 +409,7 @@ class ChallengeController extends Controller
                 $output['data']['server_time'] = $date_time;
                 $output['data']['question'] = Question::select("id AS question_id", "question", "answer1", "answer2", "answer3", "correct_answer")->where('challenge_id', $output['data']['challenge_id'])->where('is_active', 1)->orderBy('id', 'ASC')->get();
                 $output['success'] = true;
-                $output['message'] = "User password change successfully.";
+                $output['message'] = "Chalange data passed successfully.";
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             } else {
                 $output['success'] = false;
@@ -437,7 +437,7 @@ class ChallengeController extends Controller
                     c.`question_start_time`, c.`question_end_time`, c.`total_price`, c.`total_coin`, c.`question_count`, 
                     c.`question_price`, c.`question_coin`, c.`total_watch`, c.`total_like`
                     FROM `challenges` AS c 
-                    WHERE c.`is_Active` = 1 AND c.`start_date_time` <= '".$date_time."' 
+                    WHERE c.`is_Active` = 1 AND c.`question_end_time` <= '".$date_time."' 
                     ORDER BY c.`id` DESC 
                     LIMIT " . $limit;
             $challenge_data = DB::select($sql);
@@ -492,7 +492,7 @@ class ChallengeController extends Controller
                     c.`question_start_time`, c.`question_end_time`, c.`total_price`, c.`total_coin`, c.`question_count`, 
                     c.`question_price`, c.`question_coin`, c.`total_watch`, c.`total_like`
                     FROM `challenges` AS c 
-                    WHERE c.`is_Active` = 1 AND c.`start_date_time` >= '".$date_time."' 
+                    WHERE c.`is_Active` = 1 AND c.`question_end_time` >= '".$date_time."' 
                     ORDER BY c.`id` DESC 
                     LIMIT " . $limit;
             $challenge_data = DB::select($sql);
@@ -522,7 +522,7 @@ class ChallengeController extends Controller
                 }
                 $output['data']['server_time'] = $date_time;
                 $output['success'] = true;
-                $output['message'] = "Old challenge list passed successfully.";
+                $output['message'] = "New challenge list passed successfully.";
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             } else {
                 $output['success'] = false;
