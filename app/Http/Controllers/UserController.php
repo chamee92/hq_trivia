@@ -261,7 +261,7 @@ class UserController extends Controller
                 }
                 $file_name = time().'_'.$first_name . '.' . $ext;
                 $file_path = $request->file('profile_picture')->storeAs('uploads/users', $file_name, 'public');
-                $profile_picture = 'http://hq.docketapps.com/storage/'.$file_path;
+                $profile_picture = 'https://hq.docketapps.com/storage/'.$file_path;
             } else {
                 $profile_picture = null;
             }
@@ -505,7 +505,7 @@ class UserController extends Controller
                     }
                     $file_name = time().'_'.$first_name . '.' . $ext;
                     $file_path = $request->file('profile_picture')->storeAs('uploads/users', $file_name, 'public');
-                    $profile_picture = 'http://hq.docketapps.com/storage/'.$file_path;
+                    $profile_picture = 'https://hq.docketapps.com/storage/'.$file_path;
                 } else {
                     $profile_picture = null;
                 }
