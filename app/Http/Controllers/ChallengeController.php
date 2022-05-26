@@ -910,7 +910,6 @@ class ChallengeController extends Controller
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
         }  catch (\Exception $e) {
-            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin.";
@@ -945,7 +944,6 @@ class ChallengeController extends Controller
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
         }  catch (\Exception $e) {
-            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin.";
@@ -1079,7 +1077,7 @@ class ChallengeController extends Controller
                         $user_data->save();
                     }
                 } else {
-                    $status = 0;
+                    $status = -1;
                     $payment_data->status = $status;
                     $output['message'] = "Payment rejected successfully.";
                     $payment_description = "Payment Rejected (". $invoice_number .")";
@@ -1132,7 +1130,6 @@ class ChallengeController extends Controller
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
         }  catch (\Exception $e) {
-            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin.";
