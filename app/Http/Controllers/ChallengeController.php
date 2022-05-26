@@ -1058,6 +1058,10 @@ class ChallengeController extends Controller
                 $coin_amount = doubleval($payment_data->coin_amount);
                 $user_id = intval($payment_data->user_id);
                 if($status == 1) {
+                    $paid_amount = doubleval($payment_data->amount);
+                    $paid_coin_amount = doubleval($payment_data->coin_amount);
+                    $payment_data->paid_amount = $paid_amount;
+                    $payment_data->paid_coin_amount = $paid_coin_amount;
                     $payment_data->status = $status;
                     $output['message'] = "Payment accepted successfully.";
     
