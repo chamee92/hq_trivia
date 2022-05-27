@@ -1167,7 +1167,6 @@ class ChallengeController extends Controller
             $output['message'] = "Payments data passed successfully.";
             return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
         }  catch (\Exception $e) {
-            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin.";
@@ -1196,7 +1195,6 @@ class ChallengeController extends Controller
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
         }  catch (\Exception $e) {
-            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin.";
@@ -1212,7 +1210,6 @@ class ChallengeController extends Controller
             $output['message'] = "Setting data passed successfully.";
             return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
         }  catch (\Exception $e) {
-            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin.";
