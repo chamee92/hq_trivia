@@ -472,9 +472,9 @@ class ChallengeController extends Controller
                 $output['message'] = "Challenge data passed successfully.";
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             } else {
-                $output['success'] = false;
+                $output['success'] = true;
                 $output['data'] = null;
-                $output['message'] = "Data didn't passed correctly!.";
+                $output['message'] = "Still ne deside new challenge!";
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
         }  catch (\Exception $e) {
