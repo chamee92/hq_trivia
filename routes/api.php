@@ -33,10 +33,13 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('challenge/video/add', [ChallengeController::class, 'addChallengeVideo']);
     Route::post('challenge/watch/add', [ChallengeController::class, 'addChallengeWatch']);
     Route::post('challenge/like/add', [ChallengeController::class, 'addChallengeLike']);
+    Route::post('challenge/quiz/add', [ChallengeController::class, 'addChallengeQuiz']);
     Route::post('challenge/edit', [ChallengeController::class, 'editChallenge']);
     Route::post('challenge/next', [ChallengeController::class, 'nextChallenge']);
     Route::post('challenge/old/list', [ChallengeController::class, 'oldChallengeList']);
     Route::post('challenge/new/list', [ChallengeController::class, 'newChallengeList']);
+    Route::post('challenge/user/data', [ChallengeController::class, 'dataChallengeUser']);
+    Route::post('challenge/leader/board', [ChallengeController::class, 'dataChallengeLeaderBoard']);
 
     Route::post('question/add', [ChallengeController::class, 'addQuestion']);
     Route::post('question/delete', [ChallengeController::class, 'deleteQuestion']);
