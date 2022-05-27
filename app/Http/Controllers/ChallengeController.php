@@ -13,6 +13,7 @@ use App\Models\Question;
 use App\Models\UserQuestion;
 use App\Models\Ledger;
 use App\Models\Payment;
+use App\Models\Setting;
 
 class ChallengeController extends Controller
 {
@@ -695,7 +696,7 @@ class ChallengeController extends Controller
                                                 ->orderBy('challenges.id', 'DESC')->get();
 
                 $output['success'] = true;
-                $output['message'] = "User, challenge list passed  successfully.";
+                $output['message'] = "User, challenge list passed successfully.";
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             } else {
                 $output['success'] = false;
@@ -764,7 +765,7 @@ class ChallengeController extends Controller
                                                     ->orderBy('questions.id', 'ASC')->get();
 
                 $output['success'] = true;
-                $output['message'] = "User, answer list passed  successfully.";
+                $output['message'] = "User, answer list passed successfully.";
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             } else {
                 $output['success'] = false;
@@ -935,7 +936,7 @@ class ChallengeController extends Controller
                                                 ->orderBy('challenges.id', 'DESC')->get();
 
                 $output['success'] = true;
-                $output['message'] = "User, challenge list passed  successfully.";
+                $output['message'] = "User, challenge list passed successfully.";
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             } else {
                 $output['success'] = false;
@@ -1129,6 +1130,83 @@ class ChallengeController extends Controller
                 $output['message'] = "Data didn't passed correctly!.";
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
+        }  catch (\Exception $e) {
+            $output['success'] = false;
+            $output['data'] = null;
+            $output['message'] = "Server error. Please contact admin.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+        }
+    }
+  
+    public function getPayment(Request $request)
+    {
+        try {
+            $data = json_decode($request->getContent(),true);
+            $user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
+            $status = isset($data['status']) ? intval($data['status']) : 0;
+
+            if($user_id > 0) {
+                $output['data']['payment_data'] = Payment::where('payments.user_id', $user_id)->where('payments.status', $status)->where('payments.is_active', 1)
+                                                    ->select('payments.id AS payment_id', 'payments.invoice_number', 'payments.description', 'payments.amount', 
+                                                            'payments.paid_amount', 'payments.coin_amount', 'payments.paid_coin_amount', 'payments.status', 
+                                                            'payments.transaction_data', 'payments.user_id', 'users.first_name', 'users.last_name', 'users.email_address'
+                                                            , 'users.mobile_number', 'users.address1', 'users.address2', 'users.zip_code', 'users.profile_picture')
+                                                    ->orderBy('payments.id', 'DESC')->get();
+            } else {
+                $output['data']['payment_data'] = Payment::where('payments.user_id', $user_id)->where('payments.status', $status)->where('payments.is_active', 1)
+                                                    ->select('payments.id AS payment_id', 'payments.invoice_number', 'payments.description', 'payments.amount', 
+                                                            'payments.paid_amount', 'payments.coin_amount', 'payments.paid_coin_amount', 'payments.status', 
+                                                            'payments.transaction_data', 'payments.user_id', 'users.first_name', 'users.last_name', 'users.email_address'
+                                                            , 'users.mobile_number', 'users.address1', 'users.address2', 'users.zip_code', 'users.profile_picture')
+                                                    ->orderBy('payments.id', 'DESC')->get();
+            }
+            $output['success'] = true;
+            $output['message'] = "Payments data passed successfully.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+        }  catch (\Exception $e) {
+            $output['success'] = false;
+            $output['data'] = null;
+            $output['message'] = "Server error. Please contact admin.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+        }
+    }
+  
+    public function getLedger(Request $request)
+    {
+        try {
+            $data = json_decode($request->getContent(),true);
+            $user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
+
+            if($user_id > 0) {
+                $output['data']['ledger_data'] = Ledger::select('description', 'status', 'amount', 'balance', 'coin_amount', 'coin_balance')
+                                                    ->where('user_id', $user_id)->where('is_active', 1)->orderBy('id', 'DESC')->get();
+
+                $output['success'] = true;
+                $output['message'] = "Ledger data passed successfully.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            } else {
+                $output['success'] = false;
+                $output['data'] = null;
+                $output['message'] = "Data didn't passed correctly!.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            }
+        }  catch (\Exception $e) {
+            $output['success'] = false;
+            $output['data'] = null;
+            $output['message'] = "Server error. Please contact admin.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+        }
+    }
+    public function getSetting(Request $request)
+    {
+        try {
+            $output['data']['setting_data'] = Setting::select('data', 'value')->where('is_active', 1)->orderBy('id', 'DESC')->get();
+            $output['success'] = true;
+            $output['message'] = "Setting data passed successfully.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
         }  catch (\Exception $e) {
             $output['success'] = false;
             $output['data'] = null;
