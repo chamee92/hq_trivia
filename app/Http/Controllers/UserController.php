@@ -305,7 +305,6 @@ class UserController extends Controller
             return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
 
         }  catch (\Exception $e) {
-            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin";
@@ -344,7 +343,7 @@ class UserController extends Controller
         $output['message'] = "User login successfully.";
         if($user->id > 0) {
             $auth_user = User::select('id AS user_id', 'user_type_id','first_name', 'last_name', 'email_address', 'mobile_number', 'login_type', 'push_id', 'device_id', 'os_type', 'created_at',
-                                    'address1', 'address2', 'zip_code', 'profile_picture', 'file_extension', 'earn_total', 'pendin_withdraw_total', 'withdraw_total', 'earn_balance', 'earn_coin_total', 
+                                    'address1', 'address2', 'zip_code', 'profile_picture', 'file_extension', 'earn_total', 'pending_withdraw_total', 'withdraw_total', 'earn_balance', 'earn_coin_total', 
                                     'pendin_withdraw_coin_total', 'withdraw_coin_total', 'earn_coin_balance', 'is_active', 'updated_at')
                                 ->where('id', $user->id)->orderBy('id','DESC')->first();
             if(isset($auth_user->user_id) && intval($auth_user->user_id) > 0) {
@@ -364,7 +363,7 @@ class UserController extends Controller
                 $output['data']['profile_picture']  = $auth_user->profile_picture;      
                 $output['data']['file_extension']  = $auth_user->file_extension; 
                 $output['data']['earn_total']  = doubleval($auth_user->earn_total);   
-                $output['data']['pendin_withdraw_total']  = doubleval($auth_user->pendin_withdraw_total);      
+                $output['data']['pending_withdraw_total']  = doubleval($auth_user->pending_withdraw_total);      
                 $output['data']['withdraw_total']  = doubleval($auth_user->withdraw_total);   
                 $output['data']['earn_balance']  = doubleval($auth_user->earn_balance);  
                 $output['data']['earn_coin_total']  = doubleval($auth_user->earn_coin_total);       
@@ -450,7 +449,6 @@ class UserController extends Controller
             return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
 
         }  catch (\Exception $e) {
-            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin.";
@@ -531,8 +529,10 @@ class UserController extends Controller
                 $user_data->address1 = $address1;
                 $user_data->address2 = $address2;
                 $user_data->zip_code = $zip_code;
-                $user_data->file_extension = $ext;
-                $user_data->profile_picture = $profile_picture;
+                if($profile_picture != null) {
+                    $user_data->file_extension = $ext;
+                    $user_data->profile_picture = $profile_picture;
+                }
                 $user_data->updated_at = $date_time;
                 $user_data->save();
                 

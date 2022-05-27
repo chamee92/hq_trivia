@@ -268,6 +268,61 @@ class ChallengeController extends Controller
         }
     }
   
+    public function addChallengeQuiz(Request $request)
+    {
+        try {
+            $data = json_decode($request->getContent(),true);
+            $challenge_id = isset($data['challenge_id']) ? intval($data['challenge_id']) : 0;
+            $user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
+            $status = isset($data['status']) ? intval($data['status']) : 0;
+            $updated_at = date("Y-m-d H:i:s");
+
+            if($challenge_id > 0 && $user_id > 0) {
+                $challenge_data = UserChallenge::where('challenge_id', $challenge_id)->where('user_id', $user_id)->where('is_active', 1)->orderBy('id', 'DESC')->first();
+                
+                if(isset($challenge_data->id) && intval($challenge_data->has_attend_quiz) == 1) {
+                    $output['success'] = false;
+                    $output['data'] = null;
+                    $output['message'] = "You all ready attend the quiz!.";
+                    return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+                } else {
+                    if($status != 1) {
+                        $status = 0;
+                    } 
+
+                    UserChallenge::updateOrCreate(
+                        [
+                            'user_id' => $user_id,
+                            'challenge_id' => $challenge_id
+                        ],
+                        [
+                            'has_attend_quiz' => $status,
+                            'is_active' => 1,
+                            'created_at' => $updated_at,
+                            'updated_at' => $updated_at
+                        ]
+                    );
+
+                    $output['success'] = true;
+                    $output['message'] = "Quiz attend mark successfully.";
+                    $output['data'] = null;
+                    return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+                }
+            } else {
+                $output['success'] = false;
+                $output['data'] = null;
+                $output['message'] = "Data didn't passed correctly!.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            }
+        }  catch (\Exception $e) {
+            $output['success'] = false;
+            $output['data'] = null;
+            $output['message'] = "Server error. Please contact admin.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+        }
+    }
+  
     public function editChallenge(Request $request)
     {
         try {
@@ -697,6 +752,115 @@ class ChallengeController extends Controller
 
                 $output['success'] = true;
                 $output['message'] = "User, challenge list passed successfully.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            } else {
+                $output['success'] = false;
+                $output['data'] = null;
+                $output['message'] = "Data didn't passed correctly!.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            }
+        }  catch (\Exception $e) {
+            $output['success'] = false;
+            $output['data'] = null;
+            $output['message'] = "Server error. Please contact admin.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+        }
+    }
+  
+    public function dataChallengeUser(Request $request)
+    {
+        try {
+            $data = json_decode($request->getContent(),true);
+            $user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
+            $date_time = date("Y-m-d H:i:s");
+
+            if($user_id > 0 ) {
+                $user_data = User::where('id', $user_id)->orderBy('id', 'DESC')->first();
+                if(isset($user_data->id)) {
+                    $output['data']['first_name'] = $user_data->first_name;
+                    $output['data']['last_name'] = $user_data->last_name;
+                    $output['data']['earn_balance'] = $user_data->earn_balance;
+                    $output['data']['earn_coin_balance'] = $user_data->earn_coin_balance;
+                    
+                    $users_rank_data = User::where('is_active', 1)->orderBy('earn_total', 'DESC')->get();
+                    $rank = 1;
+                    foreach($users_rank_data AS $rank_user) {
+                        if(intval($rank_user->id) == $user_id) {
+                            break;
+                        } else {
+                            $rank++;
+                        }
+                    }
+                    $output['data']['my_rank'] = $rank;
+                    
+                    $date_time = date("Y-m-d H:i:s");
+                    $sql = "SELECT c.`id` AS 'challenge_id', c.`challenge_name`, c.`challenge_Description`, c.`image_path`, c.`video_path`, 
+                            c.`start_date_time`, c.`end_date_time`, c.`video_duration`, c.`quiz_duration`, c.`question_duration`, 
+                            c.`question_start_time`, c.`question_end_time`, c.`total_price`, c.`total_coin`, c.`question_count`, 
+                            c.`question_price`, c.`question_coin`, c.`total_watch`, c.`total_like`
+                            FROM `challenges` AS c 
+                            WHERE c.`is_Active` = 1 AND c.`start_date_time` >= '".$date_time."' 
+                            ORDER BY c.`id` ASC 
+                            LIMIT 1";
+                    $challenge_data = DB::select($sql);
+                    if(sizeof($challenge_data) > 0 ) {
+                        foreach($challenge_data AS $challenge) {
+                            $output['data']['next_game_time'] = $challenge->start_date_time;
+                        }
+                    } else {
+                        $output['data']['next_game_time'] = null;
+                    }
+                } else {
+                    $output['data'] = null;
+                }
+
+                $output['success'] = true;
+                $output['message'] = "User, challenge list passed successfully.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            } else {
+                $output['success'] = false;
+                $output['data'] = null;
+                $output['message'] = "Data didn't passed correctly!.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            }
+        }  catch (\Exception $e) {
+            $output['success'] = false;
+            $output['data'] = null;
+            $output['message'] = "Server error. Please contact admin.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+        }
+    }
+  
+    public function dataChallengeLeaderBoard(Request $request)
+    {
+        try {
+            $data = json_decode($request->getContent(),true);
+            $user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
+
+            if($user_id > 0 ) {
+                $users_rank_data = User::where('is_active', 1)->orderBy('earn_total', 'DESC')->get();
+
+                foreach($users_rank_data AS $index=>$rank_user) {
+                    $output['data']['user'][$index]['user_id'] = $rank_user->id;
+                    $output['data']['user'][$index]['rank'] = $index++;
+                    $output['data']['user'][$index]['first_name'] = $rank_user->first_name;
+                    $output['data']['user'][$index]['last_name'] = $rank_user->last_name;
+                    $output['data']['user'][$index]['earn_total'] = $rank_user->earn_total;
+                    $output['data']['user'][$index]['earn_coin_total'] = $rank_user->earn_coin_total;
+                    if(intval($rank_user->id) == $user_id) {
+                        $output['data']['my']['user_id'] = $rank_user->id;
+                        $output['data']['my']['rank'] = $index++;
+                        $output['data']['my']['first_name'] = $rank_user->first_name;
+                        $output['data']['my']['last_name'] = $rank_user->last_name;
+                        $output['data']['my']['earn_total'] = $rank_user->earn_total;
+                        $output['data']['my']['earn_coin_total'] = $rank_user->earn_coin_total;
+                    }
+                }
+
+                $output['success'] = true;
+                $output['message'] = "Leadger board data passed successfully.";
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             } else {
                 $output['success'] = false;
