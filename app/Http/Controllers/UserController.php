@@ -344,7 +344,7 @@ class UserController extends Controller
         if($user->id > 0) {
             $auth_user = User::select('id AS user_id', 'user_type_id','first_name', 'last_name', 'email_address', 'mobile_number', 'login_type', 'push_id', 'device_id', 'os_type', 'created_at',
                                     'address1', 'address2', 'zip_code', 'profile_picture', 'file_extension', 'earn_total', 'pending_withdraw_total', 'withdraw_total', 'earn_balance', 'earn_coin_total', 
-                                    'pendin_withdraw_coin_total', 'withdraw_coin_total', 'earn_coin_balance', 'is_active', 'updated_at')
+                                    'pending_withdraw_coin_total', 'withdraw_coin_total', 'earn_coin_balance', 'is_active', 'updated_at')
                                 ->where('id', $user->id)->orderBy('id','DESC')->first();
             if(isset($auth_user->user_id) && intval($auth_user->user_id) > 0) {
                 $output['data']['user_id'] = intval($auth_user->user_id);
@@ -367,7 +367,7 @@ class UserController extends Controller
                 $output['data']['withdraw_total']  = doubleval($auth_user->withdraw_total);   
                 $output['data']['earn_balance']  = doubleval($auth_user->earn_balance);  
                 $output['data']['earn_coin_total']  = doubleval($auth_user->earn_coin_total);       
-                $output['data']['pendin_withdraw_coin_total']  = doubleval($auth_user->pendin_withdraw_coin_total);   
+                $output['data']['pending_withdraw_coin_total']  = doubleval($auth_user->pending_withdraw_coin_total);   
                 $output['data']['withdraw_coin_total']  = doubleval($auth_user->withdraw_coin_total);   
                 $output['data']['earn_coin_balance']  = doubleval($auth_user->earn_coin_balance);                   
                 $output['data']['is_active']  = $auth_user->is_active;
