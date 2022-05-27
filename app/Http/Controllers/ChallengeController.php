@@ -842,16 +842,16 @@ class ChallengeController extends Controller
             if($user_id > 0 ) {
                 $users_rank_data = User::where('is_active', 1)->orderBy('earn_total', 'DESC')->get();
 
-                foreach($users_rank_data AS $index=>$rank_user) {
+                foreach($users_rank_data AS $index => $rank_user) {
                     $output['data']['user'][$index]['user_id'] = $rank_user->id;
-                    $output['data']['user'][$index]['rank'] = $index++;
+                    $output['data']['user'][$index]['rank'] = $index + 1;
                     $output['data']['user'][$index]['first_name'] = $rank_user->first_name;
                     $output['data']['user'][$index]['last_name'] = $rank_user->last_name;
                     $output['data']['user'][$index]['earn_total'] = $rank_user->earn_total;
                     $output['data']['user'][$index]['earn_coin_total'] = $rank_user->earn_coin_total;
                     if(intval($rank_user->id) == $user_id) {
                         $output['data']['my']['user_id'] = $rank_user->id;
-                        $output['data']['my']['rank'] = $index++;
+                        $output['data']['my']['rank'] = $index + 1;
                         $output['data']['my']['first_name'] = $rank_user->first_name;
                         $output['data']['my']['last_name'] = $rank_user->last_name;
                         $output['data']['my']['earn_total'] = $rank_user->earn_total;
