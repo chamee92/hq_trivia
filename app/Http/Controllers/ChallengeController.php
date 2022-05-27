@@ -1147,14 +1147,16 @@ class ChallengeController extends Controller
             $status = isset($data['status']) ? intval($data['status']) : 0;
 
             if($user_id > 0) {
-                $output['data']['payment_data'] = Payment::where('payments.user_id', $user_id)->where('payments.status', $status)->where('payments.is_active', 1)
+                $output['data']['payment_data'] = Payment::join('users', 'users.id', 'payments.user_id')->where('payments.user_id', $user_id)
+                                                    ->where('payments.status', $status)->where('payments.is_active', 1)->where('users.is_active', 1)
                                                     ->select('payments.id AS payment_id', 'payments.invoice_number', 'payments.description', 'payments.amount', 
                                                             'payments.paid_amount', 'payments.coin_amount', 'payments.paid_coin_amount', 'payments.status', 
                                                             'payments.transaction_data', 'payments.user_id', 'users.first_name', 'users.last_name', 'users.email_address'
                                                             , 'users.mobile_number', 'users.address1', 'users.address2', 'users.zip_code', 'users.profile_picture')
                                                     ->orderBy('payments.id', 'DESC')->get();
             } else {
-                $output['data']['payment_data'] = Payment::where('payments.user_id', $user_id)->where('payments.status', $status)->where('payments.is_active', 1)
+                $output['data']['payment_data'] = Payment::join('users', 'users.id', 'payments.user_id')->where('payments.user_id', $user_id)
+                                                    ->where('payments.status', $status)->where('payments.is_active', 1)
                                                     ->select('payments.id AS payment_id', 'payments.invoice_number', 'payments.description', 'payments.amount', 
                                                             'payments.paid_amount', 'payments.coin_amount', 'payments.paid_coin_amount', 'payments.status', 
                                                             'payments.transaction_data', 'payments.user_id', 'users.first_name', 'users.last_name', 'users.email_address'
