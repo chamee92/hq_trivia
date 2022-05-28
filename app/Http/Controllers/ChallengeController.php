@@ -1382,6 +1382,7 @@ class ChallengeController extends Controller
 
         }
     }
+
     public function getSetting(Request $request)
     {
         try {
@@ -1389,6 +1390,46 @@ class ChallengeController extends Controller
             $output['success'] = true;
             $output['message'] = "Setting data passed successfully.";
             return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+        }  catch (\Exception $e) {
+            $output['success'] = false;
+            $output['data'] = null;
+            $output['message'] = "Server error. Please contact admin.";
+            return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+        }
+    }
+    
+    public function getDashboard(Request $request)
+    {
+        try {
+            $data = json_decode($request->getContent(),true);
+            $user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
+            $date_time = date('Y-m-d H:i:s');
+            if($user_id > 0) {
+                $participents_data = User::where('is_active', 1)->where('user_type_id', 2)->get();
+                $output['data']['participant_count'] = $participents_data->count('id');
+                $admin_data = User::where('is_active', 1)->where('user_type_id', 1)->get();
+                $output['data']['admin_count'] = $admin_data->count('id');
+                $old_challenge_data = Challenge::where('is_active', 1)->whereDate('start_date_time' , '<', $date_time)->get();
+                $output['data']['old_challenge_count'] = $old_challenge_data->count('id');
+                $new_challenge_data = Challenge::where('is_active', 1)->whereDate('start_date_time' , '>=', $date_time)->get();
+                $output['data']['new_challenge_count'] = $new_challenge_data->count('id');
+                $paid_data = Payment::where('is_active', 1)->whereDate('status' , 1)->get();
+                $output['data']['total_paid_amount'] = $paid_data->sum('paid_amount');
+                $output['data']['total_paid_coin'] = $paid_data->sum('paid_coin_amount');
+                $pending_payment_data = Payment::where('is_active', 1)->whereDate('status' , 0)->get();
+                $output['data']['pending_payment_amount'] = $pending_payment_data->sum('amount');
+                $output['data']['pending_payment_coin'] = $pending_payment_data->sum('coin_amount');
+                $output['success'] = true;
+                $output['message'] = "Setting data passed successfully.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+
+            } else {
+                $output['success'] = false;
+                $output['data'] = null;
+                $output['message'] = "Data didn't passed correctly!.";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            }
         }  catch (\Exception $e) {
             $output['success'] = false;
             $output['data'] = null;
