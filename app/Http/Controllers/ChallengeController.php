@@ -435,7 +435,6 @@ class ChallengeController extends Controller
         try {
             $data = json_decode($request->getContent(),true);
             $user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
-
             $date_time = date("Y-m-d H:i:s");
             $sql = "SELECT c.`id` AS 'challenge_id', c.`challenge_name`, c.`challenge_Description`, c.`image_path`, c.`video_path`, 
                     c.`start_date_time`, c.`end_date_time`, c.`video_duration`, c.`quiz_duration`, c.`question_duration`, 
@@ -477,13 +476,13 @@ class ChallengeController extends Controller
                                                 ->where('challenge_id', $challenge->challenge_id)->where('user_id', $user_id)
                                                 ->where('is_active', 1)->orderBy('id', 'DESC')->first();
 
-                $output['data']['has_watched'] = $isset($challenge_data->has_watched) ? intval($challenge_data->has_watched) : 0;
-                $output['data']['has_like'] = $isset($challenge_data->has_like) ? intval($challenge_data->has_like) : 0;
-                $output['data']['has_attend_quiz'] = $isset($challenge_data->has_attend_quiz) ? intval($challenge_data->has_attend_quiz) : 0;
-                $output['data']['correct_answer_count'] = $isset($challenge_data->correct_answer_count) ? intval(($challenge_data->correct_answer_count)) : 0;
-                $output['data']['wrong_answer_count'] = $isset($challenge_data->wrong_answer_count) ? intval($challenge_data->wrong_answer_count) : 0;
-                $output['data']['earn_amount'] = $isset($challenge_data->earn_amount) ? doubleval($challenge_data->earn_amount) : 0;
-                $output['data']['earn_coin'] = $isset($challenge_data->earn_coin) ? doubleval($challenge_data->earn_coin) : 0;
+                $output['data']['has_watched'] = isset($challenge_data->has_watched) ? intval($challenge_data->has_watched) : 0;
+                $output['data']['has_like'] = isset($challenge_data->has_like) ? intval($challenge_data->has_like) : 0;
+                $output['data']['has_attend_quiz'] = isset($challenge_data->has_attend_quiz) ? intval($challenge_data->has_attend_quiz) : 0;
+                $output['data']['correct_answer_count'] = isset($challenge_data->correct_answer_count) ? intval(($challenge_data->correct_answer_count)) : 0;
+                $output['data']['wrong_answer_count'] = isset($challenge_data->wrong_answer_count) ? intval($challenge_data->wrong_answer_count) : 0;
+                $output['data']['earn_amount'] = isset($challenge_data->earn_amount) ? doubleval($challenge_data->earn_amount) : 0;
+                $output['data']['earn_coin'] = isset($challenge_data->earn_coin) ? doubleval($challenge_data->earn_coin) : 0;
 
                 $output['success'] = true;
                 $output['message'] = "Challenge data passed successfully.";
