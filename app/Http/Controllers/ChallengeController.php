@@ -435,6 +435,7 @@ class ChallengeController extends Controller
         try {
             $data = json_decode($request->getContent(),true);
             $user_id = isset($data['user_id']) ? intval($data['user_id']) : 0;
+
             $date_time = date("Y-m-d H:i:s");
             $sql = "SELECT c.`id` AS 'challenge_id', c.`challenge_name`, c.`challenge_Description`, c.`image_path`, c.`video_path`, 
                     c.`start_date_time`, c.`end_date_time`, c.`video_duration`, c.`quiz_duration`, c.`question_duration`, 
@@ -494,6 +495,7 @@ class ChallengeController extends Controller
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
         }  catch (\Exception $e) {
+            dd($e);
             $output['success'] = false;
             $output['data'] = null;
             $output['message'] = "Server error. Please contact admin.";
