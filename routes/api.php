@@ -59,5 +59,6 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     Route::post('payment/data', [ChallengeController::class, 'getPayment']);
     Route::post('ledger/data', [ChallengeController::class, 'getLedger']);
     Route::post('setting/data', [ChallengeController::class, 'getSetting']);
+    Route::post('dashboard/data', [ChallengeController::class, 'getDashboard']);
 
 });
