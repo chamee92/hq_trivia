@@ -490,7 +490,7 @@ class ChallengeController extends Controller
             } else {
                 $output['success'] = true;
                 $output['data'] = null;
-                $output['message'] = "Still ne deside new challenge!";
+                $output['message'] = "Still no deside new challenge!";
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
         }  catch (\Exception $e) {
