@@ -308,7 +308,7 @@ class UserController extends Controller
                 $output['message'] = "Login credentials are invalid";
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
-
+            $user->user_id = $user->id;
             $output['success'] = true;
             $output['data']['token'] = $token;
             $output['data']['user'] = $user;
