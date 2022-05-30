@@ -299,7 +299,18 @@ class UserController extends Controller
                         'updated_at' => $date_time
                     ]);
 
+                    
+            $credentials['email'] = $email;
+            $credentials['password'] = $password;
+            if (! $token = JWTAuth::attempt($credentials)) {
+                $output['success'] = false;
+                $output['data'] = [];
+                $output['message'] = "Login credentials are invalid";
+                return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
+            }
+
             $output['success'] = true;
+            $output['data']['token'] = $token;
             $output['data']['user'] = $user;
             $output['message'] = "User registered successfully";
             return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
