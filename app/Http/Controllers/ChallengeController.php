@@ -153,7 +153,9 @@ class ChallengeController extends Controller
 
             if($challenge_id > 0 && $user_id > 0 && isset($challenge_data->id)) {
                 $total_watch = intval($challenge_data->total_watch);
-                if($status == 1) {
+                $user_challenge_data = UserChallenge::where('user_id', $user_id)->where('challenge_id', $challenge_id)->orderBy('id', 'DESC')->first();
+                $has_watched = isset($user_challenge_data->has_watched) ? intval($user_challenge_data->has_watched) : 0;
+                if($status == 1 && $has_watched == 0) {
                     $challenge_data->total_watch = $total_watch + 1;
                     UserChallenge::updateOrCreate(
                         [
@@ -166,7 +168,7 @@ class ChallengeController extends Controller
                             'updated_at' => $updated_at
                         ]
                     );
-                } else {
+                } elseif($status == 0 && $has_watched == 1) {
                     $challenge_data->total_watch = $total_watch - 1;
                     UserChallenge::updateOrCreate(
                         [
