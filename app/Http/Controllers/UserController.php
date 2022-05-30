@@ -252,7 +252,7 @@ class UserController extends Controller
                 return response()->json(['success' => $output['success'],'message' => $output['message'], 'output' => $output['data']], 200);
             }
             
-
+            $ext = null;
             //file upload
             if($request->file()) {
                 $ext = pathinfo($request->profile_picture->getClientOriginalName(), PATHINFO_EXTENSION);
