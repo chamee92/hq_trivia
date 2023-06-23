@@ -21,6 +21,9 @@ class Question extends Model
         'answer2',
         'answer3',
         'correct_answer',
+        'answer1_count',
+        'answer2_count',
+        'answer3_count',
         'is_active',
         'created_at',
         'updated_at'
